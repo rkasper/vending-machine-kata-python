@@ -1,6 +1,7 @@
 import unittest
 
 from coin import Coin
+from product import Product
 from vendingmachine import VendingMachine
 
 
@@ -51,6 +52,30 @@ class VendingMachineTest(unittest.TestCase):
         self.assertFalse(vm.accept_coin(Coin.PENNY), "Should not accept a penny")
         self.assertEqual("$0.45", vm.display())
         self.assertEqual(Coin.PENNY, vm.coin_returned(), "Rejected penny should be in coin return slot")
+
+    # Select Product
+    #
+    # As a vendor
+    # I want customers to select products
+    # So that I can give them an incentive to put money in the machine
+    #
+    # There are three products: cola for $1.00, chips for $0.50, and candy for $0.65. When the respective button is
+    # pressed and enough money has been inserted, the product is dispensed and the machine displays THANK YOU. If the
+    # display is checked again, it will display INSERT COIN and the current amount will be set to $0.00. If there is
+    # not enough money inserted then the machine displays PRICE and the price of the item and subsequent checks of the
+    # display will display either INSERT COIN or the current amount as appropriate.
+    def test_select_product(self):
+        vm = VendingMachine()
+
+        # TODO Rename method to reflect user's experience. Try deposit_coin().
+        vm.accept_coin(Coin.QUARTER)
+        vm.accept_coin(Coin.QUARTER)
+        vm.accept_coin(Coin.QUARTER)
+        vm.accept_coin(Coin.QUARTER)
+        product = vm.select_product(Product.CHIPS)
+        self.assertEqual(Product.CHIPS, product)
+        self.assertEqual("THANK YOU", vm.display())
+
 
 
 if __name__ == '__main__':
