@@ -8,7 +8,8 @@ class State(Enum):
     INSERT_COIN = 1
     HAS_COINS = 2
     THANK_YOU = 3
-    PRICE_CHIPS = 4
+    PRICE_COLA = 4
+    PRICE_CHIPS = 5
 
 
 class VendingMachine:
@@ -41,9 +42,12 @@ class VendingMachine:
             return "INSERT COIN"
         elif self.state == State.HAS_COINS:
             return '${:,.2f}'.format(self.balance)
-        elif self.state == State.PRICE_CHIPS:
+        elif self.state == State.PRICE_COLA:
             self.state = State.INSERT_COIN
             return "PRICE $1.00"
+        elif self.state == State.PRICE_CHIPS:
+            self.state = State.INSERT_COIN
+            return "PRICE $0.50"
         else:
             self.state = State.INSERT_COIN
             return "THANK YOU"
@@ -52,10 +56,19 @@ class VendingMachine:
         return self.coin_return_slot
 
     def select_product(self, product: Product):
-        if self.balance == 1:
-            self.state = State.THANK_YOU
-            self.balance = 0
-            return Product.COLA
+        if product == Product.COLA:
+            if self.balance == 1.00:
+                self.state = State.THANK_YOU
+                self.balance = 0
+                return Product.COLA
+            else:
+                self.state = State.PRICE_COLA
+                return None
         else:
-            self.state = State.PRICE_CHIPS
-            return None
+            if self.balance == 0.50:
+                self.state = State.THANK_YOU
+                self.balance = 0
+                return Product.CHIPS
+            else:
+                self.state = State.PRICE_CHIPS
+                return None
