@@ -114,6 +114,18 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual("INSERT COIN", vm.display())
 
         # Purchase candy for 65 cents
+        product = vm.select_product(Product.CANDY)
+        self.assertIsNone(product)
+        self.assertEqual("PRICE $0.65", vm.display(), "Wrong price for candy")
+        self.assertEqual("INSERT COIN", vm.display())
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
+        product = vm.select_product(Product.CANDY)
+        self.assertEqual(Product.CANDY, product)
+        self.assertEqual("THANK YOU", vm.display())
+        self.assertEqual("INSERT COIN", vm.display())
 
 
 if __name__ == '__main__':

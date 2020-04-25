@@ -10,6 +10,7 @@ class State(Enum):
     THANK_YOU = 3
     PRICE_COLA = 4
     PRICE_CHIPS = 5
+    PRICE_CANDY = 6
 
 
 class VendingMachine:
@@ -48,6 +49,9 @@ class VendingMachine:
         elif self.state == State.PRICE_CHIPS:
             self.state = State.INSERT_COIN
             return "PRICE $0.50"
+        elif self.state == State.PRICE_CANDY:
+            self.state = State.INSERT_COIN
+            return "PRICE $0.65"
         else:
             self.state = State.INSERT_COIN
             return "THANK YOU"
@@ -64,11 +68,19 @@ class VendingMachine:
             else:
                 self.state = State.PRICE_COLA
                 return None
-        else:
+        elif product == Product.CHIPS:
             if self.balance == 0.50:
                 self.state = State.THANK_YOU
                 self.balance = 0
                 return Product.CHIPS
             else:
                 self.state = State.PRICE_CHIPS
+                return None
+        else:  # product == Product.CANDY
+            if self.balance == 0.65:
+                self.state = State.THANK_YOU
+                self.balance = 0
+                return Product.CANDY
+            else:
+                self.state = State.PRICE_CANDY
                 return None
