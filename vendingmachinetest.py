@@ -68,36 +68,36 @@ class VendingMachineTest(unittest.TestCase):
         vm = VendingMachine()
 
         # When I insert enough money and select chips,
-        # then I get my chips
+        # then I get my cola
         #  and the display says THANK YOU
         #  and then the display says INSERT COIN
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
-        product = vm.select_product(Product.CHIPS)
-        self.assertEqual(Product.CHIPS, product)
+        product = vm.select_product(Product.COLA)
+        self.assertEqual(Product.COLA, product)
         self.assertEqual("THANK YOU", vm.display())
         self.assertEqual("INSERT COIN", vm.display())
 
         # ... and then there's no money left in the machine.
         # Given there's no money in the machine
-        # when  I select chips
+        # when  I select cola
         # then  I receive nothing
-        #  and  the display tells me the price of the chips
+        #  and  the display tells me the price of the cola
         #  and  then the display tells me to INSERT COIN
-        product = vm.select_product(Product.CHIPS)
+        product = vm.select_product(Product.COLA)
         self.assertIsNone(product)
         self.assertEqual("PRICE $1.00", vm.display())
         self.assertEqual("INSERT COIN", vm.display())
 
         # Given there's no money in the machine
-        # when  I add a coin, but it's not enough to purchase chips
+        # when  I add a coin, but it's not enough to purchase cola
         # then  I receive nothing
-        #  and  the display tells me the price of the chips
+        #  and  the display tells me the price of the cola
         #  and  then the display tells me to INSERT COIN
         vm.deposit_coin(Coin.QUARTER)
-        product = vm.select_product(Product.CHIPS)
+        product = vm.select_product(Product.COLA)
         self.assertIsNone(product)
         self.assertEqual("PRICE $1.00", vm.display())
         self.assertEqual("INSERT COIN", vm.display())

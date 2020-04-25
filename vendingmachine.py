@@ -55,7 +55,7 @@ class VendingMachine:
         if self.balance == 1:
             self.state = State.THANK_YOU
             self.balance = 0
-            return Product.CHIPS
+            return Product.COLA
         else:
             self.state = State.PRICE_CHIPS
             return None

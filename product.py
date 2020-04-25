@@ -2,4 +2,4 @@ from enum import Enum
 
 
 class Product(Enum):
-    CHIPS = 1
+    COLA = 1
