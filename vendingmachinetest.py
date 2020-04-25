@@ -74,6 +74,9 @@ class VendingMachineTest(unittest.TestCase):
         product = vm.select_product(Product.CHIPS)
         self.assertEqual(Product.CHIPS, product)
         self.assertEqual("THANK YOU", vm.display())
+        self.assertEqual("INSERT COIN", vm.display())
+        product = vm.select_product(Product.CHIPS)
+        self.assertIsNone(product)
 
 
 

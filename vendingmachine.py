@@ -28,11 +28,18 @@ class VendingMachine:
         return True
 
     def display(self):
-        return self.next_display_message
+        msg = self.next_display_message
+        if msg == "THANK YOU":
+            self.next_display_message = "INSERT COIN"
+        return msg
 
     def coin_returned(self):
         return self.coin_return_slot
 
     def select_product(self, product: Product):
-        self.next_display_message = "THANK YOU"
-        return Product.CHIPS
+        if self.balance == 1:
+            self.next_display_message = "THANK YOU"
+            self.balance = 0
+            return Product.CHIPS
+        else:
+            return None
