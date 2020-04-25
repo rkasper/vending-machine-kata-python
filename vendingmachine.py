@@ -19,7 +19,7 @@ class VendingMachine:
     def __init__(self):
         self.state = State.INSERT_COIN
         self.balance = 0
-        self.coin_return_slot = Coin.NONE
+        self.coin_return_slot = None
 
     def deposit_coin(self, coin: Coin):
         if coin == Coin.PENNY:
@@ -32,7 +32,7 @@ class VendingMachine:
             self.balance += 0.10
         else:
             self.balance += 0.25
-        self.coin_return_slot = Coin.NONE
+        self.coin_return_slot = None
         self.state = State.HAS_COINS
         return True
 

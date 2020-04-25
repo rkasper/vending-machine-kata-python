@@ -34,7 +34,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we add a nickel, it displays the balance: $0.05.
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
         self.assertEqual("$0.05", vm.display())
-        self.assertEqual(Coin.NONE, vm.coin_returned(), "The coin return slot should be empty.")
+        self.assertIsNone(vm.coin_returned(), "The coin return slot should be empty.")
 
         # When we add another nickel, it displays the new balance: $0.10
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
