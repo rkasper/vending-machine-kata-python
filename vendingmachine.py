@@ -8,6 +8,7 @@ class State(Enum):
     INSERT_COIN = 1
     HAS_COINS = 2
     THANK_YOU = 3
+    PRICE_CHIPS = 4
 
 
 class VendingMachine:
@@ -40,6 +41,9 @@ class VendingMachine:
             return "INSERT COIN"
         elif self.state == State.HAS_COINS:
             return '${:,.2f}'.format(self.balance)
+        elif self.state == State.PRICE_CHIPS:
+            self.state = State.INSERT_COIN
+            return "PRICE $1.00"
         else:
             self.state = State.INSERT_COIN
             return "THANK YOU"
@@ -53,4 +57,5 @@ class VendingMachine:
             self.balance = 0
             return Product.CHIPS
         else:
+            self.state = State.PRICE_CHIPS
             return None
