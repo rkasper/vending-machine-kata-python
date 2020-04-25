@@ -32,24 +32,24 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual("INSERT COIN", vm.display())
 
         # When we add a nickel, it displays the balance: $0.05.
-        self.assertTrue(vm.accept_coin(Coin.NICKEL))
+        self.assertTrue(vm.deposit_coin(Coin.NICKEL))
         self.assertEqual("$0.05", vm.display())
         self.assertEqual(Coin.NONE, vm.coin_returned(), "The coin return slot should be empty.")
 
         # When we add another nickel, it displays the new balance: $0.10
-        self.assertTrue(vm.accept_coin(Coin.NICKEL))
+        self.assertTrue(vm.deposit_coin(Coin.NICKEL))
         self.assertEqual("$0.10", vm.display())
 
         # When we add a dime, it displays the new balance: $0.20
-        self.assertTrue(vm.accept_coin(Coin.DIME))
+        self.assertTrue(vm.deposit_coin(Coin.DIME))
         self.assertEqual("$0.20", vm.display())
 
         # When we add a quarter, it displays the new balance: $0.45
-        self.assertTrue(vm.accept_coin(Coin.QUARTER))
+        self.assertTrue(vm.deposit_coin(Coin.QUARTER))
         self.assertEqual("$0.45", vm.display())
 
         # When we try to add a penny, the penny is placed in the coin return and the balance doesn't change.
-        self.assertFalse(vm.accept_coin(Coin.PENNY), "Should not accept a penny")
+        self.assertFalse(vm.deposit_coin(Coin.PENNY), "Should not accept a penny")
         self.assertEqual("$0.45", vm.display())
         self.assertEqual(Coin.PENNY, vm.coin_returned(), "Rejected penny should be in coin return slot")
 
@@ -67,11 +67,10 @@ class VendingMachineTest(unittest.TestCase):
     def test_select_product(self):
         vm = VendingMachine()
 
-        # TODO Rename method to reflect user's experience. Try deposit_coin().
-        vm.accept_coin(Coin.QUARTER)
-        vm.accept_coin(Coin.QUARTER)
-        vm.accept_coin(Coin.QUARTER)
-        vm.accept_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.CHIPS)
         self.assertEqual(Product.CHIPS, product)
         self.assertEqual("THANK YOU", vm.display())

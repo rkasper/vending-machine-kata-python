@@ -12,7 +12,7 @@ class VendingMachine:
         self.coin_return_slot = Coin.NONE
         self.next_display_message = "INSERT COIN"
 
-    def accept_coin(self, coin: Coin):
+    def deposit_coin(self, coin: Coin):
         if coin == Coin.PENNY:
             self.coin_return_slot = Coin.PENNY
             return False
