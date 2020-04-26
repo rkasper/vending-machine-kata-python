@@ -34,7 +34,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we add a nickel, it displays the balance: $0.05.
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
         self.assertEqual("$0.05", vm.display())
-        self.assertIsNone(vm.coin_returned(), "The coin return slot should be empty.")
+        self.assertEqual({}, vm.coins_returned(), "The coin return slot should be empty.")
 
         # When we add another nickel, it displays the new balance: $0.10
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
@@ -51,7 +51,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we try to add a penny, the penny is placed in the coin return and the balance doesn't change.
         self.assertFalse(vm.deposit_coin(Coin.PENNY), "Should not accept a penny")
         self.assertEqual("$0.45", vm.display())
-        self.assertEqual(Coin.PENNY, vm.coin_returned(), "Rejected penny should be in coin return slot")
+        self.assertEqual({Coin.PENNY}, vm.coins_returned(), "Rejected penny should be in coin return slot")
 
     # Select Product
     #
@@ -76,7 +76,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.COLA)
-        self.assertEqual(Product.COLA, product)
+        self.assertEqual(Product.COLA, product, "The machine should give me a cola.")
         self.assertEqual("THANK YOU", vm.display())
         self.assertEqual("INSERT COIN", vm.display())
 
@@ -126,6 +126,25 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual(Product.CANDY, product)
         self.assertEqual("THANK YOU", vm.display())
         self.assertEqual("INSERT COIN", vm.display())
+
+    # Make Change
+    #
+    # As a vendor
+    # I want customers to receive correct change
+    # So that they will use the vending machine again
+    #
+    # When a product is selected that costs less than the amount of money in the machine, then the remaining amount is
+    # placed in the coin return.
+    # def test_make_change(self):
+    #     vm = VendingMachine()
+    #
+    #     # Put a dollar in the machine. Buy a candy. Get 35 cents back.
+    #     vm.deposit_coin(Coin.QUARTER)
+    #     vm.deposit_coin(Coin.QUARTER)
+    #     vm.deposit_coin(Coin.QUARTER)
+    #     vm.deposit_coin(Coin.QUARTER)
+    #     product = vm.select_product(Product.CANDY)
+
 
 
 if __name__ == '__main__':

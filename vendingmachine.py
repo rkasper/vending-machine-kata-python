@@ -15,17 +15,17 @@ class State(Enum):
 
 class VendingMachine:
     state: State
-    coin_return_slot: Coin
+    coin_return_slot = {}  # A list of Coins
     balance: float
 
     def __init__(self):
         self.state = State.INSERT_COIN
         self.balance = 0
-        self.coin_return_slot = None
+        self.coin_return_slot = {}
 
     def deposit_coin(self, coin: Coin):
         if coin == Coin.PENNY:
-            self.coin_return_slot = Coin.PENNY
+            self.coin_return_slot = {Coin.PENNY}
             return False
 
         if coin == Coin.NICKEL:
@@ -34,7 +34,7 @@ class VendingMachine:
             self.balance += 0.10
         else:
             self.balance += 0.25
-        self.coin_return_slot = None
+        self.coin_return_slot = {}
         self.state = State.HAS_COINS
         return True
 
@@ -56,7 +56,7 @@ class VendingMachine:
             self.state = State.INSERT_COIN
             return "THANK YOU"
 
-    def coin_returned(self):
+    def coins_returned(self):
         return self.coin_return_slot
 
     def select_product(self, product: Product):
