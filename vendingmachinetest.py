@@ -284,15 +284,26 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
         self.assertEqual([], vm.check_coin_return_slot())
 
-        # TODO This isn't an Exact Change test - it is a Make Change test. Move it there.
-        # Now the machine has 6 quarters + 1 dime + 1 nickel as possible change. Add 75 cents in quarters. Try to buy a
-        # candy. This time it works, and I get 10 cents back: a dime.
+    def test_receive_change_from_machines_vault(self):
+        vm = VendingMachine()
+
+        # Make a purchase. Then add 75 cents in quarters. Try to buy a
+        # candy. This time it should work, and I get 10 cents back: a dime.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
+        self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
+        self.assertEqual([], vm.check_coin_return_slot())
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
-        # TODO enable these assertions
-        # self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
-        # self.assertEqual({Coin.QUARTER: 0, Coin.DIME: 1, Coin.NICKEL: 0}, vm.check_coin_return_slot())
+        self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY), "Should receive my candy")
+        self.assertEqual([Coin.DIME], vm.check_coin_return_slot(),
+                         "Should receive change from machine's vault")
+
+    # TODO implement this test
+    # def test_receive_change_from_customers_coins_and_machines_vault(self):
 
 
 if __name__ == '__main__':
