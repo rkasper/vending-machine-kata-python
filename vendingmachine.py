@@ -23,7 +23,9 @@ class VendingMachine:
     __price_list: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
     __customers_coins: {Coin: int}  # The number of each kind of coin that the customer has inserted for a new purchase
 
-    def __init__(self, inventory: {Product: int} = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}):
+    def __init__(self, inventory=None):
+        if inventory is None:
+            inventory = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}
         self.__inventory = inventory
         self.__state = State.INSERT_COIN
         self.__display_price = 0
@@ -31,62 +33,6 @@ class VendingMachine:
         self.__coin_return_slot = []
         self.__price_list = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
         self.__customers_coins = {Coin.QUARTER: 0, Coin.DIME: 0, Coin.NICKEL: 0}
-
-    # TODO move this method lower down in the class
-    def __can_make_change(self, change_needed: int) -> [Coin]:
-        coins_to_return = []
-        while change_needed > 0:
-            if change_needed >= 25:
-                if self.__customers_coins[Coin.QUARTER] > 0:
-                    self.__customers_coins[Coin.QUARTER] -= 1;
-                    coins_to_return.append(Coin.QUARTER)
-                    change_needed -= 25
-                elif self.__customers_coins[Coin.DIME] > 0:
-                    self.__customers_coins[Coin.DIME] -= 1
-                    coins_to_return.append(Coin.DIME)
-                    change_needed -= 10
-                elif self.__customers_coins[Coin.NICKEL] > 0:
-                    self.__customers_coins[Coin.NICKEL] -= 1
-                    coins_to_return.append(Coin.NICKEL)
-                    change_needed -= 5
-                else:
-                    return []
-            elif change_needed >= 10:
-                if self.__customers_coins[Coin.DIME] > 0:
-                    self.__customers_coins[Coin.DIME] -= 1
-                    coins_to_return.append(Coin.DIME)
-                    change_needed -= 10
-                elif self.__customers_coins[Coin.NICKEL] > 0:
-                    self.__customers_coins[Coin.NICKEL] -= 1
-                    coins_to_return.append(Coin.NICKEL)
-                    change_needed -= 5
-                else:
-                    return []
-            elif change_needed >= 5:
-                if self.__customers_coins[Coin.NICKEL] > 0:
-                    self.__customers_coins[Coin.NICKEL] -= 1
-                    coins_to_return.append(Coin.NICKEL)
-                    change_needed -= 5
-                else:
-                    return []
-        return coins_to_return
-
-    # TODO rename to __return_customers_coins()
-    # TODO move this method lower down in the class
-    def __make_change(self) -> [Coin]:
-        coins = []
-        while self.__balance > 0:
-            if self.__balance >= 25:
-                coins.append(Coin.QUARTER)
-                self.__balance -= 25
-            elif self.__balance >= 10:
-                coins.append(Coin.DIME)
-                self.__balance -= 10
-            elif self.__balance >= 5:
-                coins.append(Coin.NICKEL)
-                self.__balance -= 5
-        self.__balance = 0
-        return coins
 
     def deposit_coin(self, coin: Coin) -> bool:
         if coin == Coin.PENNY:
@@ -135,9 +81,9 @@ class VendingMachine:
         price = self.__price_list[product]
         if self.__is_in_inventory(product):
             if self.__balance >= price:
-                change_needed = self.__balance - price
-                change = self.__can_make_change(change_needed)  # TODO don't compute change if we don't need it
-                if change_needed == 0 or change:
+                change_to_make = self.__balance - price
+                change = self.__make_change(change_to_make)
+                if change_to_make == 0 or change:
                     self.__remove_from_inventory(product)
                     self.__state = State.THANK_YOU
                     self.__balance = 0  # because I'm delivering both the product and the change
@@ -161,8 +107,53 @@ class VendingMachine:
     def __remove_from_inventory(self, product: Product):
         self.__inventory[product] -= 1
 
-    # TODO Return the same coins that the customer inserted: __customers_coins. Change __make_change() so it returns
-    # __customers_coins, and then reset __customers_coins so there are 0 coins.
+    # TODO Method too long - refactor it
+    def __make_change(self, change_to_make: int) -> [Coin]:
+        coins_to_return = []
+        while change_to_make > 0:
+            if change_to_make >= 25:
+                if self.__remove_customer_coin_coin_from_cache_if_possible(Coin.QUARTER):
+                    coins_to_return.append(Coin.QUARTER)
+                    change_to_make -= 25
+                elif self.__remove_customer_coin_coin_from_cache_if_possible(Coin.DIME):
+                    coins_to_return.append(Coin.DIME)
+                    change_to_make -= 10
+                elif self.__remove_customer_coin_coin_from_cache_if_possible(Coin.NICKEL):
+                    coins_to_return.append(Coin.NICKEL)
+                    change_to_make -= 5
+                else:
+                    return []  # Can't make change
+            elif change_to_make >= 10:
+                if self.__remove_customer_coin_coin_from_cache_if_possible(Coin.DIME):
+                    coins_to_return.append(Coin.DIME)
+                    change_to_make -= 10
+                elif self.__remove_customer_coin_coin_from_cache_if_possible(Coin.NICKEL):
+                    coins_to_return.append(Coin.NICKEL)
+                    change_to_make -= 5
+                else:
+                    return []  # Can't make change
+            elif change_to_make >= 5:
+                if self.__remove_customer_coin_coin_from_cache_if_possible(Coin.NICKEL):
+                    coins_to_return.append(Coin.NICKEL)
+                    change_to_make -= 5
+                else:
+                    return []  # Can't make change
+        return coins_to_return
+
+    def __remove_customer_coin_coin_from_cache_if_possible(self, coin: Coin) -> bool:
+        if self.__is_customer_coin_still_available(coin):
+            self.__remove_customers_coin_from_cache(coin)
+            return True
+        else:
+            return False
+
+    def __remove_customers_coin_from_cache(self, coin: Coin):
+        self.__customers_coins[coin] -= 1
+
+    def __is_customer_coin_still_available(self, coin: Coin) -> bool:
+        return self.__customers_coins[coin] > 0
+
     def press_coin_return_button(self):
-        self.__coin_return_slot = self.__make_change()
+        self.__balance = 0
+        self.__coin_return_slot = self.__customers_coins
         self.__state = State.INSERT_COIN
