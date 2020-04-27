@@ -3,10 +3,6 @@ from enum import Enum
 from coin import Coin
 from product import Product
 
-PRICE_CANDY = 65
-PRICE_CHIPS = 50
-PRICE_COLA = 100
-
 
 class State(Enum):
     INSERT_COIN = 1
@@ -27,7 +23,7 @@ class VendingMachine:
         self.display_price = 0
         self.balance = 0
         self.coin_return_slot = []
-        self.products = {Product.COLA : PRICE_COLA, Product.CHIPS : PRICE_CHIPS, Product.CANDY : PRICE_CANDY}
+        self.products = {Product.COLA : 100, Product.CHIPS : 50, Product.CANDY : 65}
 
     def make_change(self):
         coins = []
