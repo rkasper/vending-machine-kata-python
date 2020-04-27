@@ -13,81 +13,81 @@ class State(Enum):
 
 
 class VendingMachine:
-    state: State  # I am a state machine! This is what state I am in.
-    display_price: int  # When we're in state State.PRICE, this is the price to display.
-    coin_return_slot: [Coin]  # The coins that the machine has ejected into the coin return slot
-    balance: int  # How much money the customers have inserted, in cents
-    products: {Product: int}  # The products that this machine sells. The dictionary maps Product to its price in cents.
+    __state: State  # I am a state machine! This is what state I am in.
+    __display_price: int  # When we're in state State.PRICE, this is the price to display.
+    __coin_return_slot: [Coin]  # The coins that the machine has ejected into the coin return slot
+    __balance: int  # How much money the customers have inserted, in cents
+    __products: {Product: int}  # The products that this machine sells. The dictionary maps Product to its price in cents.
 
     def __init__(self):
-        self.state = State.INSERT_COIN
-        self.display_price = 0
-        self.balance = 0
-        self.coin_return_slot = []
-        self.products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
+        self.__state = State.INSERT_COIN
+        self.__display_price = 0
+        self.__balance = 0
+        self.__coin_return_slot = []
+        self.__products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
 
     def make_change(self) -> [Coin]:
         coins = []
-        while self.balance > 0:
-            if self.balance >= 25:
+        while self.__balance > 0:
+            if self.__balance >= 25:
                 coins.append(Coin.QUARTER)
-                self.balance -= 25
-            elif self.balance >= 10:
+                self.__balance -= 25
+            elif self.__balance >= 10:
                 coins.append(Coin.DIME)
-                self.balance -= 10
-            elif self.balance >= 5:
+                self.__balance -= 10
+            elif self.__balance >= 5:
                 coins.append(Coin.NICKEL)
-                self.balance -= 5
-        self.balance = 0
+                self.__balance -= 5
+        self.__balance = 0
         return coins
 
     def deposit_coin(self, coin: Coin) -> bool:
         if coin == Coin.PENNY:
-            self.coin_return_slot = [coin]
+            self.__coin_return_slot = [coin]
             return False
 
         if coin == Coin.NICKEL:
-            self.balance += 5
+            self.__balance += 5
         elif coin == Coin.DIME:
-            self.balance += 10
+            self.__balance += 10
         else:
-            self.balance += 25
-        self.coin_return_slot = []
-        self.state = State.HAS_COINS
+            self.__balance += 25
+        self.__coin_return_slot = []
+        self.__state = State.HAS_COINS
         return True
 
     def display(self) -> str:
-        if self.state == State.INSERT_COIN:
+        if self.__state == State.INSERT_COIN:
             return "INSERT COIN"
-        elif self.state == State.HAS_COINS:
-            return self.display_amount(self.balance)
-        elif self.state == State.PRICE:
-            self.state = State.INSERT_COIN
-            return 'PRICE ' + self.display_amount(self.display_price)
+        elif self.__state == State.HAS_COINS:
+            return self.__display_amount(self.__balance)
+        elif self.__state == State.PRICE:
+            self.__state = State.INSERT_COIN
+            return 'PRICE ' + self.__display_amount(self.__display_price)
         else:
-            self.state = State.INSERT_COIN
+            self.__state = State.INSERT_COIN
             return "THANK YOU"
 
     @staticmethod
-    def display_amount(amount: int) -> str:
+    def __display_amount(amount: int) -> str:
         return '${:,.2f}'.format(amount / 100)
 
     def coins_returned(self) -> [Coin]:
-        return self.coin_return_slot
+        return self.__coin_return_slot
 
     def select_product(self, product: Product) -> Optional[Product]:
-        price = self.products[product]
-        if self.balance >= price:
-            self.state = State.THANK_YOU
-            self.balance -= price
-            self.coin_return_slot = self.make_change()
+        price = self.__products[product]
+        if self.__balance >= price:
+            self.__state = State.THANK_YOU
+            self.__balance -= price
+            self.__coin_return_slot = self.make_change()
             return product
         else:
-            self.state = State.PRICE
-            self.display_price = price
+            self.__state = State.PRICE
+            self.__display_price = price
             return None
 
     def return_coins(self):
-        self.coin_return_slot = self.make_change()
-        self.state = State.INSERT_COIN
+        self.__coin_return_slot = self.make_change()
+        self.__state = State.INSERT_COIN
 
