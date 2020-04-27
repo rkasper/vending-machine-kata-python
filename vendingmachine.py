@@ -23,7 +23,7 @@ class VendingMachine:
         self.display_price = 0
         self.balance = 0
         self.coin_return_slot = []
-        self.products = {Product.COLA : 100, Product.CHIPS : 50, Product.CANDY : 65}
+        self.products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
 
     def make_change(self):
         coins = []
