@@ -200,6 +200,35 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual(40, Coin.value(vm.coins_returned()))
         self.assertEqual("INSERT COIN", vm.display())
 
+    # Sold Out
+    #
+    # As a customer
+    # I want to be told when the item I have selected is not available
+    # So that I can select another item
+    #
+    # When the item selected by the customer is out of stock, the machine displays SOLD OUT. If the display is checked
+    # again, it will display the amount of money remaining in the machine or INSERT COIN if there is no money in the
+    # machine.
+    #
+    # Note: I think the INSERT COIN state doesn't happen. When I try to buy the product, there's still money in the
+    # machine.
+    def test_sold_out(self):
+        vm = VendingMachine({Product.CANDY: 1, Product.COLA: 2, Product.CHIPS: 42})
+
+        # Buy a candy. Buy another candy. Notice that it's out of stock.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
+        vm.select_product(Product.CANDY)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
+        vm.select_product(Product.CANDY)
+        self.assertEqual("SOLD OUT", vm.display())
+        self.assertEqual("$0.65", vm.display())
+
 
 if __name__ == '__main__':
     unittest.main()

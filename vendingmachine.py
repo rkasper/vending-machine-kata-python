@@ -10,21 +10,24 @@ class State(Enum):
     HAS_COINS = 2
     THANK_YOU = 3
     PRICE = 4
+    SOLD_OUT = 5
 
 
 class VendingMachine:
-    __state: State              # I am a state machine! This is what state I am in.
-    __display_price: int        # When we're in state State.PRICE, this is the price to display.
-    __coin_return_slot: [Coin]  # The coins that the machine has ejected into the coin return slot
-    __balance: int              # How much money the customers have inserted, in cents
-    __products: {Product: int}  # The products that this machine sells. Maps Product to its price in cents.
+    __inventory: {Product: int}  # A list of Products and the number of each one that we have in inventory
+    __state: State               # I am a state machine! This is what state I am in.
+    __display_price: int         # When we're in state State.PRICE, this is the price to display.
+    __coin_return_slot: [Coin]   # The coins that the machine has ejected into the coin return slot
+    __balance: int               # How much money the customers have inserted, in cents
+    __products: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
 
-    def __init__(self):
+    def __init__(self, inventory: {Product: int} = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}):
+        self.__inventory = inventory
         self.__state = State.INSERT_COIN
         self.__display_price = 0
         self.__balance = 0
         self.__coin_return_slot = []
-        self.__products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
+        self.__products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}  # TODO Rename to 'prices'
 
     def make_change(self) -> [Coin]:
         coins = []
@@ -64,9 +67,12 @@ class VendingMachine:
         elif self.__state == State.PRICE:
             self.__state = State.INSERT_COIN
             return 'PRICE ' + self.__display_amount(self.__display_price)
-        else:
+        elif self.__state == State.THANK_YOU:
             self.__state = State.INSERT_COIN
             return "THANK YOU"
+        else:  # state is SOLD_OUT
+            self.__state = State.HAS_COINS
+            return "SOLD OUT"
 
     @staticmethod
     def __display_amount(amount: int) -> str:
@@ -78,14 +84,26 @@ class VendingMachine:
     def select_product(self, product: Product) -> Optional[Product]:
         price = self.__products[product]
         if self.__balance >= price:
-            self.__state = State.THANK_YOU
-            self.__balance -= price
-            self.__coin_return_slot = self.make_change()
-            return product
+            if self.__is_in_inventory(product):
+                self.__remove_from_inventory(product)
+                self.__state = State.THANK_YOU
+                self.__balance -= price
+                self.__coin_return_slot = self.make_change()
+                return product
+            else:
+                self.__state = State.SOLD_OUT
+                return product
         else:
             self.__state = State.PRICE
             self.__display_price = price
             return None
+
+    def __is_in_inventory(self, product: Product) -> bool:
+        quantity = self.__inventory[product]
+        return quantity > 0
+
+    def __remove_from_inventory(self, product: Product):
+        self.__inventory[product] -= 1
 
     def return_coins(self):
         self.__coin_return_slot = self.make_change()
