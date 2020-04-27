@@ -7,7 +7,7 @@ from product import Product
 
 class State(Enum):
     INSERT_COIN = 1
-    HAS_COINS = 2
+    HAS_COINS = 2  # TODO Rename to HAS_CUSTOMER_COINS
     THANK_YOU = 3
     PRICE = 4
     SOLD_OUT = 5
