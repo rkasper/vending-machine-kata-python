@@ -34,7 +34,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we add a nickel, it displays the balance: $0.05.
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
         self.assertEqual("$0.05", vm.display())
-        self.assertEqual({}, vm.coins_returned(), "The coin return slot should be empty.")
+        self.assertEqual([], vm.coins_returned(), "The coin return slot should be empty.")
 
         # When we add another nickel, it displays the new balance: $0.10
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
@@ -51,7 +51,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we try to add a penny, the penny is placed in the coin return and the balance doesn't change.
         self.assertFalse(vm.deposit_coin(Coin.PENNY), "Should not accept a penny")
         self.assertEqual("$0.45", vm.display())
-        self.assertEqual({Coin.PENNY}, vm.coins_returned(), "Rejected penny should be in coin return slot")
+        self.assertEqual([Coin.PENNY], vm.coins_returned(), "Rejected penny should be in coin return slot")
 
     # Select Product
     #
@@ -135,17 +135,51 @@ class VendingMachineTest(unittest.TestCase):
     #
     # When a product is selected that costs less than the amount of money in the machine, then the remaining amount is
     # placed in the coin return.
-    # def test_make_change(self):
-    #     vm = VendingMachine()
-    #
-    #     # Put a dollar in the machine. Buy a candy. Get 35 cents back.
-    #     vm.deposit_coin(Coin.QUARTER)
-    #     vm.deposit_coin(Coin.QUARTER)
-    #     vm.deposit_coin(Coin.QUARTER)
-    #     vm.deposit_coin(Coin.QUARTER)
-    #     product = vm.select_product(Product.CANDY)
+    def test_make_change(self):
+        vm = VendingMachine()
 
+        # Put a dollar in the machine. Buy a candy. Get 35 cents back.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        product = vm.select_product(Product.CANDY)
+        self.assertEqual(product, Product.CANDY)
+        change = vm.coins_returned()
+        value = Coin.value(change)
+        self.assertEqual(0.35, value)
 
+        # Add 70 more cents, buy another candy. Get 5 cents back.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.DIME)
+        product = vm.select_product(Product.CANDY)
+        self.assertEqual(Product.CANDY, product)
+        change = vm.coins_returned()
+        value = Coin.value(change)
+        self.assertEqual(0.05, value)
+
+        # Add $1.10. Buy a cola. Get 10 cents back.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        product = vm.select_product(Product.COLA)
+        self.assertEqual(Product.COLA, product)
+        change = vm.coins_returned()
+        value = Coin.value(change)
+        self.assertEqual(0.10, value)
+
+        # Add $0.50, buy a chips, get 0 cents back.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        product = vm.select_product(Product.CHIPS)
+        self.assertEqual(Product.CHIPS, product)
+        change = vm.coins_returned()
+        value = Coin.value(change)
+        self.assertEqual(0, value)
 
 if __name__ == '__main__':
     unittest.main()
