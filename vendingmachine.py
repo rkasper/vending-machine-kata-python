@@ -13,11 +13,11 @@ class State(Enum):
 
 
 class VendingMachine:
-    __state: State  # I am a state machine! This is what state I am in.
-    __display_price: int  # When we're in state State.PRICE, this is the price to display.
+    __state: State              # I am a state machine! This is what state I am in.
+    __display_price: int        # When we're in state State.PRICE, this is the price to display.
     __coin_return_slot: [Coin]  # The coins that the machine has ejected into the coin return slot
-    __balance: int  # How much money the customers have inserted, in cents
-    __products: {Product: int}  # The products that this machine sells. The dictionary maps Product to its price in cents.
+    __balance: int              # How much money the customers have inserted, in cents
+    __products: {Product: int}  # The products that this machine sells. Maps Product to its price in cents.
 
     def __init__(self):
         self.__state = State.INSERT_COIN
