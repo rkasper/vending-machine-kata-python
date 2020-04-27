@@ -18,7 +18,7 @@ class VendingMachine:
     __inventory: {Product: int}  # A list of Products and the number of each one that we have in inventory
     __state: State               # I am a state machine! This is what state I am in.
     __display_price: int         # When we're in state State.PRICE, this is the price to display.
-    __coin_return_slot: [Coin]   # The coins that the machine has ejected into the coin return slot
+    __coin_return_slot: {Coin: int}   # The coins that the machine has ejected into the coin return slot
     __balance: int               # How much money the customers have inserted, in cents
     __price_list: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
     __customers_coins: {Coin: int}  # The number of each kind of coin that the customer has inserted for a new purchase
@@ -83,8 +83,11 @@ class VendingMachine:
             if self.__balance >= price:
                 change_to_make = self.__balance - price
                 change = self.__make_change(change_to_make)
-                if change_to_make == 0 or change:
+                if change_to_make == 0 or change:  # customer can make the purchase
                     self.__remove_from_inventory(product)
+                    if change_to_make == 0: # Take all the customer's coins
+                        self.__customers_coins = {Coin.QUARTER: 0, Coin.DIME: 0, Coin.NICKEL: 0}
+                    #else when we made change, it got taken care of
                     self.__state = State.THANK_YOU
                     self.__balance = 0  # because I'm delivering both the product and the change
                     self.__coin_return_slot = change
@@ -112,35 +115,35 @@ class VendingMachine:
         coins_to_return = []
         while change_to_make > 0:
             if change_to_make >= 25:
-                if self.__remove_customer_coin_coin_from_cache_if_possible(Coin.QUARTER):
+                if self.__remove_customer_coin_from_cache_if_possible(Coin.QUARTER):
                     coins_to_return.append(Coin.QUARTER)
                     change_to_make -= 25
-                elif self.__remove_customer_coin_coin_from_cache_if_possible(Coin.DIME):
+                elif self.__remove_customer_coin_from_cache_if_possible(Coin.DIME):
                     coins_to_return.append(Coin.DIME)
                     change_to_make -= 10
-                elif self.__remove_customer_coin_coin_from_cache_if_possible(Coin.NICKEL):
+                elif self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
                     coins_to_return.append(Coin.NICKEL)
                     change_to_make -= 5
                 else:
                     return []  # Can't make change
             elif change_to_make >= 10:
-                if self.__remove_customer_coin_coin_from_cache_if_possible(Coin.DIME):
+                if self.__remove_customer_coin_from_cache_if_possible(Coin.DIME):
                     coins_to_return.append(Coin.DIME)
                     change_to_make -= 10
-                elif self.__remove_customer_coin_coin_from_cache_if_possible(Coin.NICKEL):
+                elif self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
                     coins_to_return.append(Coin.NICKEL)
                     change_to_make -= 5
                 else:
                     return []  # Can't make change
             elif change_to_make >= 5:
-                if self.__remove_customer_coin_coin_from_cache_if_possible(Coin.NICKEL):
+                if self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
                     coins_to_return.append(Coin.NICKEL)
                     change_to_make -= 5
                 else:
                     return []  # Can't make change
         return coins_to_return
 
-    def __remove_customer_coin_coin_from_cache_if_possible(self, coin: Coin) -> bool:
+    def __remove_customer_coin_from_cache_if_possible(self, coin: Coin) -> bool:
         if self.__is_customer_coin_still_available(coin):
             self.__remove_customers_coin_from_cache(coin)
             return True
@@ -155,5 +158,12 @@ class VendingMachine:
 
     def press_coin_return_button(self):
         self.__balance = 0
-        self.__coin_return_slot = self.__customers_coins
         self.__state = State.INSERT_COIN
+
+        self.__coin_return_slot = []
+        for i in range(0, self.__customers_coins[Coin.QUARTER]):
+            self.__coin_return_slot.append(Coin.QUARTER)
+        for i in range(0, self.__customers_coins[Coin.DIME]):
+            self.__coin_return_slot.append(Coin.DIME)
+        for i in range(0, self.__customers_coins[Coin.NICKEL]):
+            self.__coin_return_slot.append(Coin.NICKEL)

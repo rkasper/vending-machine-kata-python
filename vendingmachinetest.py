@@ -199,7 +199,9 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
         vm.press_coin_return_button()
-        self.assertEqual(40, Coin.value(vm.check_coin_return_slot()))
+        returned_coins = vm.check_coin_return_slot()
+        self.assertEqual([Coin.QUARTER, Coin.DIME, Coin.NICKEL], returned_coins)
+        self.assertEqual(40, Coin.value(returned_coins))
         self.assertEqual("INSERT COIN", vm.view_display_message())
 
     # Sold Out
@@ -257,32 +259,40 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)  # That's 75 cents - enough for a candy
         self.assertIsNone(vm.select_product(Product.CANDY))
         self.assertEqual("EXACT CHANGE ONLY", vm.view_display_message())
+        self.assertEqual([], vm.check_coin_return_slot())
 
         # Buy a cola ($1.00) with 4 quarters. Put 3 more quarters into the machine. Try to buy candy ($0.65). The
         # machine can't make change from , so it tells me so.
         vm.deposit_coin(Coin.QUARTER)
-        vm.deposit_coin(Coin.QUARTER)
-        vm.deposit_coin(Coin.QUARTER)
-        vm.deposit_coin(Coin.QUARTER)
         self.assertEqual(Product.COLA, vm.select_product(Product.COLA))
+        self.assertEqual([], vm.check_coin_return_slot(),
+                         "Just made an exact-change purchase - there shouldn't be any coins in the coin return slot.")
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         self.assertIsNone(vm.select_product(Product.CANDY))
         self.assertEqual("EXACT CHANGE ONLY", vm.view_display_message())
+        self.assertEqual([], vm.check_coin_return_slot())
 
         # Get my coins back. Put exact change in (2 quarters + 1 dime + 1 nickel) and buy a candy.
         vm.press_coin_return_button()
+        self.assertEqual([Coin.QUARTER, Coin.QUARTER, Coin.QUARTER], vm.check_coin_return_slot())
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
         self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
+        self.assertEqual([], vm.check_coin_return_slot())
 
-        # TODO Let the machine make change from its vault
-        # Now the machine has 6 quarters + 1 dime + 1 nickel as possible change. Add a dollar. Try to buy a candy.
-        # This time it works, and I get 35 cents back.
-        # self.assertTrue(False, "implement this test")
+        # TODO This isn't an Exact Change test - it is a Make Change test. Move it there.
+        # Now the machine has 6 quarters + 1 dime + 1 nickel as possible change. Add 75 cents in quarters. Try to buy a
+        # candy. This time it works, and I get 10 cents back: a dime.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        # TODO enable these assertions
+        # self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
+        # self.assertEqual({Coin.QUARTER: 0, Coin.DIME: 1, Coin.NICKEL: 0}, vm.check_coin_return_slot())
 
 
 if __name__ == '__main__':
