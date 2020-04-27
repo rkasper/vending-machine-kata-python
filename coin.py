@@ -8,15 +8,15 @@ class Coin(Enum):
     QUARTER = 3
 
     @staticmethod
-    def value(coins) -> float:
-        sum: float = 0;
+    def value(coins: []) -> float:  # TODO How to specify that the param is [Coin]?
+        val: float = 0
         for coin in coins:
             if coin == Coin.PENNY:
-                sum += 0.01
+                val += 0.01
             elif coin == Coin.NICKEL:
-                sum += 0.05
+                val += 0.05
             elif coin == Coin.DIME:
-                sum += 0.10
+                val += 0.10
             elif coin == Coin.QUARTER:
-                sum += 0.25
-        return sum
+                val += 0.25
+        return val

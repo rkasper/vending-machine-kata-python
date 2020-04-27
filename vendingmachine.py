@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from coin import Coin
 from product import Product
@@ -12,11 +13,11 @@ class State(Enum):
 
 
 class VendingMachine:
-    state: State
-    coin_return_slot = []  # A list of Coins TODO Specify this type better
-    balance: int
-    products = {}  # TODO document this dictionary
-    display_price: int
+    state: State  # I am a state machine! This is what state I am in.
+    display_price: int  # When we're in state State.PRICE, this is the price to display.
+    coin_return_slot: [Coin]  # The coins that the machine has ejected into the coin return slot
+    balance: int  # How much money the customers have inserted, in cents
+    products: {Product: int}  # The products that this machine sells. The dictionary maps Product to its price in cents.
 
     def __init__(self):
         self.state = State.INSERT_COIN
@@ -25,7 +26,7 @@ class VendingMachine:
         self.coin_return_slot = []
         self.products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
 
-    def make_change(self):
+    def make_change(self) -> [Coin]:
         coins = []
         while self.balance > 0:
             if self.balance >= 25:
@@ -40,8 +41,7 @@ class VendingMachine:
         self.balance = 0
         return coins
 
-    # TODO Specify that it returns True or False
-    def deposit_coin(self, coin: Coin):
+    def deposit_coin(self, coin: Coin) -> bool:
         if coin == Coin.PENNY:
             self.coin_return_slot = [coin]
             return False
@@ -56,8 +56,7 @@ class VendingMachine:
         self.state = State.HAS_COINS
         return True
 
-    # TODO Specify that it returns str
-    def display(self):
+    def display(self) -> str:
         if self.state == State.INSERT_COIN:
             return "INSERT COIN"
         elif self.state == State.HAS_COINS:
@@ -69,12 +68,10 @@ class VendingMachine:
             self.state = State.INSERT_COIN
             return "THANK YOU"
 
-    # TODO Specify that it returns List[Coin]
-    def coins_returned(self):
+    def coins_returned(self) -> [Coin]:
         return self.coin_return_slot
 
-    # TODO Specify that it returns Product
-    def select_product(self, product: Product):
+    def select_product(self, product: Product) -> Optional[Product]:
         price = self.products[product]
         if self.balance >= price:
             self.state = State.THANK_YOU
