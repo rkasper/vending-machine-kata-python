@@ -32,7 +32,7 @@ class VendingMachine:
         self.__balance = 0
         self.__coin_return_slot = []
         self.__price_list = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
-        self.__customers_coins = {Coin.QUARTER: 0, Coin.DIME: 0, Coin.NICKEL: 0}
+        self.__customers_coins = self.__initialize_with_no_coins()
 
     def deposit_coin(self, coin: Coin) -> bool:
         if coin == Coin.PENNY:
@@ -86,7 +86,7 @@ class VendingMachine:
                 if change_to_make == 0 or change:  # customer can make the purchase
                     self.__remove_from_inventory(product)
                     if change_to_make == 0: # Take all the customer's coins
-                        self.__customers_coins = {Coin.QUARTER: 0, Coin.DIME: 0, Coin.NICKEL: 0}
+                        self.__customers_coins = self.__initialize_with_no_coins()
                     #else when we made change, it got taken care of
                     self.__state = State.THANK_YOU
                     self.__balance = 0  # because I'm delivering both the product and the change
@@ -102,6 +102,9 @@ class VendingMachine:
         else:  # selected product is not in inventory
             self.__state = State.SOLD_OUT
             return None
+
+    def __initialize_with_no_coins(self):
+        return {Coin.QUARTER: 0, Coin.DIME: 0, Coin.NICKEL: 0}
 
     def __is_in_inventory(self, product: Product) -> bool:
         quantity = self.__inventory[product]
