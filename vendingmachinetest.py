@@ -225,9 +225,18 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
-        vm.select_product(Product.CANDY)
+        product = vm.select_product(Product.CANDY)
+        self.assertIsNone(product)
         self.assertEqual("SOLD OUT", vm.display())
         self.assertEqual("$0.65", vm.display())
+
+        # Get my money back. With no money inserted, try to buy a candy. It should tell me "SOLD OUT", then
+        # "INSERT COIN"
+        vm.return_coins()
+        product = vm.select_product(Product.CANDY)
+        self.assertIsNone(product)
+        self.assertEqual("SOLD OUT", vm.display())
+        self.assertEqual("INSERT COIN", vm.display())
 
 
 if __name__ == '__main__':

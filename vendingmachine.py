@@ -19,7 +19,7 @@ class VendingMachine:
     __display_price: int         # When we're in state State.PRICE, this is the price to display.
     __coin_return_slot: [Coin]   # The coins that the machine has ejected into the coin return slot
     __balance: int               # How much money the customers have inserted, in cents
-    __prices: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
+    __price_list: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
 
     def __init__(self, inventory: {Product: int} = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}):
         self.__inventory = inventory
@@ -27,7 +27,7 @@ class VendingMachine:
         self.__display_price = 0
         self.__balance = 0
         self.__coin_return_slot = []
-        self.__prices = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
+        self.__price_list = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
 
     def make_change(self) -> [Coin]:
         coins = []
@@ -71,7 +71,10 @@ class VendingMachine:
             self.__state = State.INSERT_COIN
             return "THANK YOU"
         else:  # state is SOLD_OUT
-            self.__state = State.HAS_COINS
+            if self.__balance == 0:
+                self.__state = State.INSERT_COIN
+            else:
+                self.__state = State.HAS_COINS
             return "SOLD OUT"
 
     @staticmethod
@@ -82,20 +85,20 @@ class VendingMachine:
         return self.__coin_return_slot
 
     def select_product(self, product: Product) -> Optional[Product]:
-        price = self.__prices[product]
-        if self.__balance >= price:
-            if self.__is_in_inventory(product):
+        price = self.__price_list[product]
+        if self.__is_in_inventory(product):
+            if self.__balance >= price:
                 self.__remove_from_inventory(product)
                 self.__state = State.THANK_YOU
                 self.__balance -= price
                 self.__coin_return_slot = self.make_change()
                 return product
             else:
-                self.__state = State.SOLD_OUT
-                return product
+                self.__state = State.PRICE
+                self.__display_price = price
+                return None
         else:
-            self.__state = State.PRICE
-            self.__display_price = price
+            self.__state = State.SOLD_OUT
             return None
 
     def __is_in_inventory(self, product: Product) -> bool:
