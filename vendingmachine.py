@@ -81,7 +81,7 @@ class VendingMachine:
     def __display_amount(amount: int) -> str:
         return '${:,.2f}'.format(amount / 100)
 
-    def coins_returned(self) -> [Coin]:
+    def coin_return_slot(self) -> [Coin]:
         return self.__coin_return_slot
 
     def select_product(self, product: Product) -> Optional[Product]:
@@ -108,6 +108,6 @@ class VendingMachine:
     def __remove_from_inventory(self, product: Product):
         self.__inventory[product] -= 1
 
-    def return_coins(self):
+    def press_coin_return_button(self):
         self.__coin_return_slot = self.make_change()
         self.__state = State.INSERT_COIN

@@ -34,7 +34,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we add a nickel, it displays the balance: $0.05.
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
         self.assertEqual("$0.05", vm.display())
-        self.assertEqual([], vm.coins_returned(), "The coin return slot should be empty.")
+        self.assertEqual([], vm.coin_return_slot(), "The coin return slot should be empty.")
 
         # When we add another nickel, it displays the new balance: $0.10
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
@@ -51,7 +51,7 @@ class VendingMachineTest(unittest.TestCase):
         # When we try to add a penny, the penny is placed in the coin return and the balance doesn't change.
         self.assertFalse(vm.deposit_coin(Coin.PENNY), "Should not accept a penny")
         self.assertEqual("$0.45", vm.display())
-        self.assertEqual([Coin.PENNY], vm.coins_returned(), "Rejected penny should be in coin return slot")
+        self.assertEqual([Coin.PENNY], vm.coin_return_slot(), "Rejected penny should be in coin return slot")
 
     # Select Product
     #
@@ -145,7 +145,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.CANDY)
         self.assertEqual(product, Product.CANDY)
-        change = vm.coins_returned()
+        change = vm.coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(35, value)
 
@@ -156,7 +156,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.DIME)
         product = vm.select_product(Product.CANDY)
         self.assertEqual(Product.CANDY, product)
-        change = vm.coins_returned()
+        change = vm.coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(5, value)
 
@@ -168,7 +168,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.DIME)
         product = vm.select_product(Product.COLA)
         self.assertEqual(Product.COLA, product)
-        change = vm.coins_returned()
+        change = vm.coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(10, value)
 
@@ -177,7 +177,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.CHIPS)
         self.assertEqual(Product.CHIPS, product)
-        change = vm.coins_returned()
+        change = vm.coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(0, value)
 
@@ -196,8 +196,8 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
-        vm.return_coins()
-        self.assertEqual(40, Coin.value(vm.coins_returned()))
+        vm.press_coin_return_button()
+        self.assertEqual(40, Coin.value(vm.coin_return_slot()))
         self.assertEqual("INSERT COIN", vm.display())
 
     # Sold Out
@@ -232,7 +232,7 @@ class VendingMachineTest(unittest.TestCase):
 
         # Get my money back. With no money inserted, try to buy a candy. It should tell me "SOLD OUT", then
         # "INSERT COIN"
-        vm.return_coins()
+        vm.press_coin_return_button()
         product = vm.select_product(Product.CANDY)
         self.assertIsNone(product)
         self.assertEqual("SOLD OUT", vm.display())
