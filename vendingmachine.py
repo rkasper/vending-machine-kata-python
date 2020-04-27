@@ -84,10 +84,11 @@ class VendingMachine:
         if self.__is_in_inventory(product):
             if self.__balance >= price:
                 change_to_make = self.__balance - price
-                change = self.__make_change_from_customers_coins(change_to_make) # Try to make change from the customer's coins
-                if not change:
-                    # Try to make change from the machine's coin vault
-                    change = self.__make_change_from_coin_vault(change_to_make)
+                change = self.__make_change(change_to_make)
+                # change = self.__make_change_from_customers_coins(change_to_make) # Try to make change from the customer's coins
+                # if not change:
+                #     # Try to make change from the machine's coin vault
+                #     change = self.__make_change_from_coin_vault(change_to_make)
                 if change_to_make == 0 or change:  # customer can make the purchase
                     self.__remove_from_inventory(product)
                     if change_to_make == 0: # Take all the customer's coins
@@ -125,7 +126,7 @@ class VendingMachine:
         self.__inventory[product] -= 1
 
     # TODO Method too long - refactor it
-    def __make_change_from_customers_coins(self, change_to_make: int) -> [Coin]:
+    def __make_change(self, change_to_make: int) -> [Coin]:
         coins_to_return = []
         while change_to_make > 0:
             if change_to_make >= 25:
@@ -138,30 +139,7 @@ class VendingMachine:
                 elif self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
                     coins_to_return.append(Coin.NICKEL)
                     change_to_make -= 5
-                else:
-                    return []  # Can't make change
-            elif change_to_make >= 10:
-                if self.__remove_customer_coin_from_cache_if_possible(Coin.DIME):
-                    coins_to_return.append(Coin.DIME)
-                    change_to_make -= 10
-                elif self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
-                    coins_to_return.append(Coin.NICKEL)
-                    change_to_make -= 5
-                else:
-                    return []  # Can't make change
-            elif change_to_make >= 5:
-                if self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
-                    coins_to_return.append(Coin.NICKEL)
-                    change_to_make -= 5
-                else:
-                    return []  # Can't make change
-        return coins_to_return
-
-    def __make_change_from_coin_vault(self, change_to_make: int) -> [Coin]:
-        coins_to_return = []
-        while change_to_make > 0:
-            if change_to_make >= 25:
-                if self.__remove_coin_from_coin_vault_if_possible(Coin.QUARTER):
+                elif self.__remove_coin_from_coin_vault_if_possible(Coin.QUARTER):
                     coins_to_return.append(Coin.QUARTER)
                     change_to_make -= 25
                 elif self.__remove_coin_from_coin_vault_if_possible(Coin.DIME):
@@ -173,7 +151,13 @@ class VendingMachine:
                 else:
                     return []  # Can't make change
             elif change_to_make >= 10:
-                if self.__remove_coin_from_coin_vault_if_possible(Coin.DIME):
+                if self.__remove_customer_coin_from_cache_if_possible(Coin.DIME):
+                    coins_to_return.append(Coin.DIME)
+                    change_to_make -= 10
+                elif self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
+                    coins_to_return.append(Coin.NICKEL)
+                    change_to_make -= 5
+                elif self.__remove_coin_from_coin_vault_if_possible(Coin.DIME):
                     coins_to_return.append(Coin.DIME)
                     change_to_make -= 10
                 elif self.__remove_coin_from_coin_vault_if_possible(Coin.NICKEL):
@@ -182,7 +166,10 @@ class VendingMachine:
                 else:
                     return []  # Can't make change
             elif change_to_make >= 5:
-                if self.__remove_coin_from_coin_vault_if_possible(Coin.NICKEL):
+                if self.__remove_customer_coin_from_cache_if_possible(Coin.NICKEL):
+                    coins_to_return.append(Coin.NICKEL)
+                    change_to_make -= 5
+                elif self.__remove_coin_from_coin_vault_if_possible(Coin.NICKEL):
                     coins_to_return.append(Coin.NICKEL)
                     change_to_make -= 5
                 else:

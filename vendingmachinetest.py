@@ -287,23 +287,22 @@ class VendingMachineTest(unittest.TestCase):
     def test_receive_change_from_machines_vault(self):
         vm = VendingMachine()
 
-        # Make a purchase. Then add 75 cents in quarters. Try to buy a
-        # candy. This time it should work, and I get 10 cents back: a dime.
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
         self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
         self.assertEqual([], vm.check_coin_return_slot())
+
+        # The machine's vault now contains: 2 quarters, 1 dime, and 1 nickel. Add 3 quarters (75 cents) and buy a candy.
+        # Should receive 10 cents change - the dime from the machine's vault.
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
-        self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY), "Should receive my candy")
+        candy = vm.select_product(Product.CANDY)
+        self.assertEqual(Product.CANDY, candy, "Should receive my candy")
         self.assertEqual([Coin.DIME], vm.check_coin_return_slot(),
                          "Should receive change from machine's vault")
-
-    # TODO implement this test
-    # def test_receive_change_from_customers_coins_and_machines_vault(self):
 
 
 if __name__ == '__main__':
