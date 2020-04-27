@@ -3,6 +3,10 @@ from enum import Enum
 from coin import Coin
 from product import Product
 
+PRICE_CANDY = 65
+PRICE_CHIPS = 50
+PRICE_COLA = 100
+
 
 class State(Enum):
     INSERT_COIN = 1
@@ -17,11 +21,13 @@ class VendingMachine:
     state: State
     coin_return_slot = []  # A list of Coins TODO Specify this type better
     balance: float  # TODO make this an int or find a currency class. float sucks - currency precision gets lost!
+    products = {}
 
     def __init__(self):
         self.state = State.INSERT_COIN
         self.balance = 0
         self.coin_return_slot = []
+        self.products = {Product.COLA : PRICE_COLA, Product.CHIPS : PRICE_CHIPS, Product.CANDY : PRICE_CANDY}
 
     def make_change(self):
         coins = []
@@ -79,30 +85,18 @@ class VendingMachine:
 
     # TODO Specify that it returns Product
     def select_product(self, product: Product):
-        if product == Product.COLA:
-            if self.balance >= 100:
-                self.state = State.THANK_YOU
-                self.balance -= 100
-                self.coin_return_slot = self.make_change()
-                return Product.COLA
-            else:
+        price = self.products[product]
+        if self.balance >= price:
+            self.state = State.THANK_YOU
+            self.balance -= price
+            self.coin_return_slot = self.make_change()
+            return product
+        else:
+            if product == Product.COLA:
                 self.state = State.PRICE_COLA
-                return None
-        elif product == Product.CHIPS:
-            if self.balance >= 50:
-                self.state = State.THANK_YOU
-                self.balance -= 50
-                self.coin_return_slot = self.make_change()
-                return Product.CHIPS
+            elif product == Product.CANDY:
+                self.state = State.PRICE_CANDY
             else:
                 self.state = State.PRICE_CHIPS
-                return None
-        else:  # product == Product.CANDY
-            if self.balance >= 65:
-                self.state = State.THANK_YOU
-                self.balance -= 65
-                self.coin_return_slot = self.make_change()
-                return Product.CANDY
-            else:
-                self.state = State.PRICE_CANDY
-                return None
+            return None
+
