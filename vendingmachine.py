@@ -60,13 +60,17 @@ class VendingMachine:
         if self.state == State.INSERT_COIN:
             return "INSERT COIN"
         elif self.state == State.HAS_COINS:
-            return '${:,.2f}'.format(self.balance / 100)
+            return self.display_amount(self.balance)
         elif self.state == State.PRICE:
             self.state = State.INSERT_COIN
-            return 'PRICE ${:,.2f}'.format(self.display_price / 100)
+            return 'PRICE ' + self.display_amount(self.display_price)
         else:
             self.state = State.INSERT_COIN
             return "THANK YOU"
+
+    @staticmethod
+    def display_amount(amount: int) -> str:
+        return '${:,.2f}'.format(amount / 100)
 
     def coins_returned(self) -> [Coin]:
         return self.coin_return_slot
