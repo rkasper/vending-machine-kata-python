@@ -19,7 +19,7 @@ class VendingMachine:
     __display_price: int         # When we're in state State.PRICE, this is the price to display.
     __coin_return_slot: [Coin]   # The coins that the machine has ejected into the coin return slot
     __balance: int               # How much money the customers have inserted, in cents
-    __products: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
+    __prices: {Product: int}   # The products that this machine sells. Maps Product to its price in cents.
 
     def __init__(self, inventory: {Product: int} = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}):
         self.__inventory = inventory
@@ -27,7 +27,7 @@ class VendingMachine:
         self.__display_price = 0
         self.__balance = 0
         self.__coin_return_slot = []
-        self.__products = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}  # TODO Rename to 'prices'
+        self.__prices = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
 
     def make_change(self) -> [Coin]:
         coins = []
@@ -82,7 +82,7 @@ class VendingMachine:
         return self.__coin_return_slot
 
     def select_product(self, product: Product) -> Optional[Product]:
-        price = self.__products[product]
+        price = self.__prices[product]
         if self.__balance >= price:
             if self.__is_in_inventory(product):
                 self.__remove_from_inventory(product)
