@@ -29,7 +29,7 @@ class VendingMachine:
         self.__coin_return_slot = []
         self.__price_list = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
 
-    def make_change(self) -> [Coin]:
+    def __make_change(self) -> [Coin]:
         coins = []
         while self.__balance > 0:
             if self.__balance >= 25:
@@ -59,7 +59,7 @@ class VendingMachine:
         self.__state = State.HAS_COINS
         return True
 
-    def display(self) -> str:
+    def view_display_message(self) -> str:
         if self.__state == State.INSERT_COIN:
             return "INSERT COIN"
         elif self.__state == State.HAS_COINS:
@@ -81,7 +81,7 @@ class VendingMachine:
     def __display_amount(amount: int) -> str:
         return '${:,.2f}'.format(amount / 100)
 
-    def coin_return_slot(self) -> [Coin]:
+    def check_coin_return_slot(self) -> [Coin]:
         return self.__coin_return_slot
 
     def select_product(self, product: Product) -> Optional[Product]:
@@ -91,7 +91,7 @@ class VendingMachine:
                 self.__remove_from_inventory(product)
                 self.__state = State.THANK_YOU
                 self.__balance -= price
-                self.__coin_return_slot = self.make_change()
+                self.__coin_return_slot = self.__make_change()
                 return product
             else:
                 self.__state = State.PRICE
@@ -109,5 +109,5 @@ class VendingMachine:
         self.__inventory[product] -= 1
 
     def press_coin_return_button(self):
-        self.__coin_return_slot = self.make_change()
+        self.__coin_return_slot = self.__make_change()
         self.__state = State.INSERT_COIN

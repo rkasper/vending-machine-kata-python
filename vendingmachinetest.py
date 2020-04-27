@@ -29,29 +29,29 @@ class VendingMachineTest(unittest.TestCase):
         vm = VendingMachine()
 
         # When we turn on the vending machine, it displays "INSERT COIN".
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
         # When we add a nickel, it displays the balance: $0.05.
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
-        self.assertEqual("$0.05", vm.display())
-        self.assertEqual([], vm.coin_return_slot(), "The coin return slot should be empty.")
+        self.assertEqual("$0.05", vm.view_display_message())
+        self.assertEqual([], vm.check_coin_return_slot(), "The coin return slot should be empty.")
 
         # When we add another nickel, it displays the new balance: $0.10
         self.assertTrue(vm.deposit_coin(Coin.NICKEL))
-        self.assertEqual("$0.10", vm.display())
+        self.assertEqual("$0.10", vm.view_display_message())
 
         # When we add a dime, it displays the new balance: $0.20
         self.assertTrue(vm.deposit_coin(Coin.DIME))
-        self.assertEqual("$0.20", vm.display())
+        self.assertEqual("$0.20", vm.view_display_message())
 
         # When we add a quarter, it displays the new balance: $0.45
         self.assertTrue(vm.deposit_coin(Coin.QUARTER))
-        self.assertEqual("$0.45", vm.display())
+        self.assertEqual("$0.45", vm.view_display_message())
 
         # When we try to add a penny, the penny is placed in the coin return and the balance doesn't change.
         self.assertFalse(vm.deposit_coin(Coin.PENNY), "Should not accept a penny")
-        self.assertEqual("$0.45", vm.display())
-        self.assertEqual([Coin.PENNY], vm.coin_return_slot(), "Rejected penny should be in coin return slot")
+        self.assertEqual("$0.45", vm.view_display_message())
+        self.assertEqual([Coin.PENNY], vm.check_coin_return_slot(), "Rejected penny should be in coin return slot")
 
     # Select Product
     #
@@ -77,8 +77,8 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.COLA)
         self.assertEqual(Product.COLA, product, "The machine should give me a cola.")
-        self.assertEqual("THANK YOU", vm.display())
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("THANK YOU", vm.view_display_message())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
         # ... and then there's no money left in the machine.
         # Given there's no money in the machine
@@ -88,8 +88,8 @@ class VendingMachineTest(unittest.TestCase):
         #  and  then the display tells me to INSERT COIN
         product = vm.select_product(Product.COLA)
         self.assertIsNone(product)
-        self.assertEqual("PRICE $1.00", vm.display())
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("PRICE $1.00", vm.view_display_message())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
         # Given there's no money in the machine
         # when  I add a coin, but it's not enough to purchase cola
@@ -99,33 +99,33 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.COLA)
         self.assertIsNone(product)
-        self.assertEqual("PRICE $1.00", vm.display())
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("PRICE $1.00", vm.view_display_message())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
         # Purchase chips for 50 cents
         product = vm.select_product(Product.CHIPS)
         self.assertIsNone(product)
-        self.assertEqual("PRICE $0.50", vm.display(), "Wrong price for chips")
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("PRICE $0.50", vm.view_display_message(), "Wrong price for chips")
+        self.assertEqual("INSERT COIN", vm.view_display_message())
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.CHIPS)
         self.assertEqual(Product.CHIPS, product)
-        self.assertEqual("THANK YOU", vm.display())
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("THANK YOU", vm.view_display_message())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
         # Purchase candy for 65 cents
         product = vm.select_product(Product.CANDY)
         self.assertIsNone(product)
-        self.assertEqual("PRICE $0.65", vm.display(), "Wrong price for candy")
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("PRICE $0.65", vm.view_display_message(), "Wrong price for candy")
+        self.assertEqual("INSERT COIN", vm.view_display_message())
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
         product = vm.select_product(Product.CANDY)
         self.assertEqual(Product.CANDY, product)
-        self.assertEqual("THANK YOU", vm.display())
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("THANK YOU", vm.view_display_message())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
     # Make Change
     #
@@ -145,7 +145,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.CANDY)
         self.assertEqual(product, Product.CANDY)
-        change = vm.coin_return_slot()
+        change = vm.check_coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(35, value)
 
@@ -156,7 +156,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.DIME)
         product = vm.select_product(Product.CANDY)
         self.assertEqual(Product.CANDY, product)
-        change = vm.coin_return_slot()
+        change = vm.check_coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(5, value)
 
@@ -168,7 +168,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.DIME)
         product = vm.select_product(Product.COLA)
         self.assertEqual(Product.COLA, product)
-        change = vm.coin_return_slot()
+        change = vm.check_coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(10, value)
 
@@ -177,7 +177,7 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         product = vm.select_product(Product.CHIPS)
         self.assertEqual(Product.CHIPS, product)
-        change = vm.coin_return_slot()
+        change = vm.check_coin_return_slot()
         value = Coin.value(change)
         self.assertEqual(0, value)
 
@@ -197,8 +197,8 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.DIME)
         vm.deposit_coin(Coin.NICKEL)
         vm.press_coin_return_button()
-        self.assertEqual(40, Coin.value(vm.coin_return_slot()))
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual(40, Coin.value(vm.check_coin_return_slot()))
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
     # Sold Out
     #
@@ -227,16 +227,16 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.NICKEL)
         product = vm.select_product(Product.CANDY)
         self.assertIsNone(product)
-        self.assertEqual("SOLD OUT", vm.display())
-        self.assertEqual("$0.65", vm.display())
+        self.assertEqual("SOLD OUT", vm.view_display_message())
+        self.assertEqual("$0.65", vm.view_display_message())
 
         # Get my money back. With no money inserted, try to buy a candy. It should tell me "SOLD OUT", then
         # "INSERT COIN"
         vm.press_coin_return_button()
         product = vm.select_product(Product.CANDY)
         self.assertIsNone(product)
-        self.assertEqual("SOLD OUT", vm.display())
-        self.assertEqual("INSERT COIN", vm.display())
+        self.assertEqual("SOLD OUT", vm.view_display_message())
+        self.assertEqual("INSERT COIN", vm.view_display_message())
 
 
 if __name__ == '__main__':
