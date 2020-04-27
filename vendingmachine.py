@@ -90,4 +90,3 @@ class VendingMachine:
     def return_coins(self):
         self.__coin_return_slot = self.make_change()
         self.__state = State.INSERT_COIN
-
