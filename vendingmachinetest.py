@@ -147,7 +147,7 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual(product, Product.CANDY)
         change = vm.coins_returned()
         value = Coin.value(change)
-        self.assertEqual(0.35, value)
+        self.assertEqual(35, value)
 
         # Add 70 more cents, buy another candy. Get 5 cents back.
         vm.deposit_coin(Coin.QUARTER)
@@ -158,7 +158,7 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual(Product.CANDY, product)
         change = vm.coins_returned()
         value = Coin.value(change)
-        self.assertEqual(0.05, value)
+        self.assertEqual(5, value)
 
         # Add $1.10. Buy a cola. Get 10 cents back.
         vm.deposit_coin(Coin.QUARTER)
@@ -170,7 +170,7 @@ class VendingMachineTest(unittest.TestCase):
         self.assertEqual(Product.COLA, product)
         change = vm.coins_returned()
         value = Coin.value(change)
-        self.assertEqual(0.10, value)
+        self.assertEqual(10, value)
 
         # Add $0.50, buy a chips, get 0 cents back.
         vm.deposit_coin(Coin.QUARTER)
@@ -180,6 +180,26 @@ class VendingMachineTest(unittest.TestCase):
         change = vm.coins_returned()
         value = Coin.value(change)
         self.assertEqual(0, value)
+
+    # Return Coins
+    #
+    # As a customer
+    # I want to have my money returned
+    # So that I can change my mind about buying stuff from the vending machine
+    #
+    # When the return coins button is pressed, the money the customer has placed in the machine is returned and the
+    # display shows INSERT COIN.
+    def test_return_coins(self):
+        vm = VendingMachine()
+
+        # Put coins in the machine. Get your coins back.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
+        vm.return_coins()
+        self.assertEqual(40, Coin.value(vm.coins_returned()))
+        self.assertEqual("INSERT COIN", vm.display())
+
 
 if __name__ == '__main__':
     unittest.main()

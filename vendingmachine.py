@@ -83,3 +83,7 @@ class VendingMachine:
             self.display_price = price
             return None
 
+    def return_coins(self):
+        self.coin_return_slot = self.make_change()
+        self.state = State.INSERT_COIN
+
