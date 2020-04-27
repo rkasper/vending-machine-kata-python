@@ -12,19 +12,19 @@ class State(Enum):
     INSERT_COIN = 1
     HAS_COINS = 2
     THANK_YOU = 3
-    PRICE_COLA = 4
-    PRICE_CHIPS = 5
-    PRICE_CANDY = 6
+    PRICE = 4
 
 
 class VendingMachine:
     state: State
     coin_return_slot = []  # A list of Coins TODO Specify this type better
-    balance: float  # TODO make this an int or find a currency class. float sucks - currency precision gets lost!
-    products = {}
+    balance: int
+    products = {}  # TODO document this dictionary
+    display_price: int
 
     def __init__(self):
         self.state = State.INSERT_COIN
+        self.display_price = 0
         self.balance = 0
         self.coin_return_slot = []
         self.products = {Product.COLA : PRICE_COLA, Product.CHIPS : PRICE_CHIPS, Product.CANDY : PRICE_CANDY}
@@ -66,15 +66,9 @@ class VendingMachine:
             return "INSERT COIN"
         elif self.state == State.HAS_COINS:
             return '${:,.2f}'.format(self.balance / 100)
-        elif self.state == State.PRICE_COLA:
+        elif self.state == State.PRICE:
             self.state = State.INSERT_COIN
-            return "PRICE $1.00"
-        elif self.state == State.PRICE_CHIPS:
-            self.state = State.INSERT_COIN
-            return "PRICE $0.50"
-        elif self.state == State.PRICE_CANDY:
-            self.state = State.INSERT_COIN
-            return "PRICE $0.65"
+            return 'PRICE ${:,.2f}'.format(self.display_price / 100)
         else:
             self.state = State.INSERT_COIN
             return "THANK YOU"
@@ -92,11 +86,7 @@ class VendingMachine:
             self.coin_return_slot = self.make_change()
             return product
         else:
-            if product == Product.COLA:
-                self.state = State.PRICE_COLA
-            elif product == Product.CANDY:
-                self.state = State.PRICE_CANDY
-            else:
-                self.state = State.PRICE_CHIPS
+            self.state = State.PRICE
+            self.display_price = price
             return None
 
