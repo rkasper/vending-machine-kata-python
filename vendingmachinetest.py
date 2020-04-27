@@ -142,7 +142,9 @@ class VendingMachineTest(unittest.TestCase):
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
         vm.deposit_coin(Coin.QUARTER)
-        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
         product = vm.select_product(Product.CANDY)
         self.assertEqual(product, Product.CANDY)
         change = vm.check_coin_return_slot()
@@ -237,6 +239,50 @@ class VendingMachineTest(unittest.TestCase):
         self.assertIsNone(product)
         self.assertEqual("SOLD OUT", vm.view_display_message())
         self.assertEqual("INSERT COIN", vm.view_display_message())
+
+    # Exact Change Only
+    #
+    # As a customer
+    # I want to be told when exact change is required
+    # So that I can determine if I can buy something with the money I have before inserting it
+    #
+    # When the machine is not able to make change with the money in the machine for any of the items that it sells, it
+    # will display EXACT CHANGE ONLY instead of INSERT COIN.
+    def test_exact_change_only(self):
+        vm = VendingMachine()
+
+        # Easiest case: No money in the coin safe yet. Can't make change with the coins I inserted.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)  # That's 75 cents - enough for a candy
+        self.assertIsNone(vm.select_product(Product.CANDY))
+        self.assertEqual("EXACT CHANGE ONLY", vm.view_display_message())
+
+        # Buy a cola ($1.00) with 4 quarters. Put 3 more quarters into the machine. Try to buy candy ($0.65). The
+        # machine can't make change from , so it tells me so.
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        self.assertEqual(Product.COLA, vm.select_product(Product.COLA))
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        self.assertIsNone(vm.select_product(Product.CANDY))
+        self.assertEqual("EXACT CHANGE ONLY", vm.view_display_message())
+
+        # Get my coins back. Put exact change in (2 quarters + 1 dime + 1 nickel) and buy a candy.
+        vm.press_coin_return_button()
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.QUARTER)
+        vm.deposit_coin(Coin.DIME)
+        vm.deposit_coin(Coin.NICKEL)
+        self.assertEqual(Product.CANDY, vm.select_product(Product.CANDY))
+
+        # TODO Let the machine make change from its vault
+        # Now the machine has 6 quarters + 1 dime + 1 nickel as possible change. Add a dollar. Try to buy a candy.
+        # This time it works, and I get 35 cents back.
+        # self.assertTrue(False, "implement this test")
 
 
 if __name__ == '__main__':
