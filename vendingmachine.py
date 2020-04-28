@@ -125,6 +125,7 @@ class VendingMachine:
     def __remove_from_inventory(self, product: Product):
         self.__inventory[product] -= 1
 
+    # TODO There's a lot of untested code here! Add all the tests.
     # TODO Method too long - refactor it
     def __make_change(self, change_to_make: int) -> [Coin]:
         coins_to_return = []

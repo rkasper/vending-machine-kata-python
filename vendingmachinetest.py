@@ -148,8 +148,7 @@ class VendingMachineTest(unittest.TestCase):
         product = vm.select_product(Product.CANDY)
         self.assertEqual(product, Product.CANDY)
         change = vm.check_coin_return_slot()
-        value = Coin.value(change)
-        self.assertEqual(35, value)
+        self.assertEqual([Coin.QUARTER, Coin.DIME], change)
 
         # Add 70 more cents, buy another candy. Get 5 cents back.
         vm.deposit_coin(Coin.QUARTER)
@@ -159,8 +158,7 @@ class VendingMachineTest(unittest.TestCase):
         product = vm.select_product(Product.CANDY)
         self.assertEqual(Product.CANDY, product)
         change = vm.check_coin_return_slot()
-        value = Coin.value(change)
-        self.assertEqual(5, value)
+        self.assertEqual([Coin.NICKEL], change)
 
         # Add $1.10. Buy a cola. Get 10 cents back.
         vm.deposit_coin(Coin.QUARTER)
@@ -171,8 +169,7 @@ class VendingMachineTest(unittest.TestCase):
         product = vm.select_product(Product.COLA)
         self.assertEqual(Product.COLA, product)
         change = vm.check_coin_return_slot()
-        value = Coin.value(change)
-        self.assertEqual(10, value)
+        self.assertEqual([Coin.DIME], change)
 
         # Add $0.50, buy a chips, get 0 cents back.
         vm.deposit_coin(Coin.QUARTER)
@@ -180,8 +177,7 @@ class VendingMachineTest(unittest.TestCase):
         product = vm.select_product(Product.CHIPS)
         self.assertEqual(Product.CHIPS, product)
         change = vm.check_coin_return_slot()
-        value = Coin.value(change)
-        self.assertEqual(0, value)
+        self.assertEqual([], change)
 
     # Return Coins
     #
@@ -201,7 +197,6 @@ class VendingMachineTest(unittest.TestCase):
         vm.press_coin_return_button()
         returned_coins = vm.check_coin_return_slot()
         self.assertEqual([Coin.QUARTER, Coin.DIME, Coin.NICKEL], returned_coins)
-        self.assertEqual(40, Coin.value(returned_coins))
         self.assertEqual("INSERT COIN", vm.view_display_message())
 
     # Sold Out
