@@ -37,7 +37,7 @@ class HasCustomerCoinsState(VendingMachineState):
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
-        vm._set_vm_state_to_insert_coin_state()
+        vm.set_vm_state_to_insert_coin_state()
         return "THANK YOU"
 
 
@@ -70,7 +70,7 @@ class VendingMachine:
         self.__customers_coins = self.__initialize_with_no_coins()
         self.__coin_vault = self.__initialize_with_no_coins()
 
-    def _set_vm_state_to_insert_coin_state(self):
+    def set_vm_state_to_insert_coin_state(self):
         self.__vm_state = InsertCoinState()
 
     def get_balance(self):
@@ -97,11 +97,11 @@ class VendingMachine:
 
     def view_display_message(self) -> str:
         if self.__state == State.INSERT_COIN:
-            #return "INSERT COIN"
+            # return "INSERT COIN"
             return self.__vm_state.view_display_message(self)
-            #return InsertCoinState().view_display_message(self)
+            # return InsertCoinState().view_display_message(self)
         elif self.__state == State.HAS_CUSTOMER_COINS:
-            #return self.__display_amount(self.__balance)
+            # return self.__display_amount(self.__balance)
             return self.__vm_state.view_display_message(self)
         elif self.__state == State.PRICE:
             self.__state = State.INSERT_COIN
@@ -109,8 +109,7 @@ class VendingMachine:
             return 'PRICE ' + self.__display_amount(self.__display_price)
         elif self.__state == State.THANK_YOU:
             self.__state = State.INSERT_COIN
-            #self.__vm_state = InsertCoinState()
-            #return "THANK YOU"
+            # return "THANK YOU"
             return self.__vm_state.view_display_message(self)
         elif self.__state == State.SOLD_OUT:
             if self.__balance == 0:
