@@ -42,6 +42,19 @@ class InsertCoinState(VendingMachineState):
 
 
 class HasCustomerCoinsState(VendingMachineState):
+    @staticmethod
+    def instance():
+        if HasCustomerCoinsState._instance == None:
+            HasCustomerCoinsState()
+        return HasCustomerCoinsState._instance
+
+    def __init__(self):
+        """ Virtually private constructor. """
+        if HasCustomerCoinsState._instance != None:
+            raise Exception("This class is a singleton!")
+        else:
+            HasCustomerCoinsState._instance = self
+
     def view_display_message(self, vm):
         return VendingMachineState._display_amount(vm.get_balance())
 
@@ -63,7 +76,7 @@ class SoldOutState(VendingMachineState):
         if vm.get_balance() == 0:
             self.transition_to(vm, InsertCoinState.instance())
         else:
-            self.transition_to(vm, HasCustomerCoinsState())
+            self.transition_to(vm, HasCustomerCoinsState.instance())
         return "SOLD OUT"
 
 

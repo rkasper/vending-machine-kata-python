@@ -51,7 +51,7 @@ class VendingMachine:
             self.__balance += 25
         self.__coin_return_slot = []
 
-        VendingMachineState.transition_to(self, HasCustomerCoinsState())
+        VendingMachineState.transition_to(self, HasCustomerCoinsState.instance())
 
         return True
 
