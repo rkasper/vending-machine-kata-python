@@ -81,7 +81,7 @@ class VendingMachine:
                     self.__coin_return_slot = change
                     return product
                 else:  # can't make change
-                    VendingMachineState.transition_to(self, ExactChangeOnlyState())
+                    VendingMachineState.transition_to(self, ExactChangeOnlyState.instance())
                     return None
             else:  # customer didn't insert enough money
                 VendingMachineState.transition_to(self, PriceState.instance())
