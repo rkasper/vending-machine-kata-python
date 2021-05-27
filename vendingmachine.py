@@ -2,8 +2,8 @@ from typing import Optional
 
 from coin import Coin
 from product import Product
-from vendingmachinestate import VendingMachineState, InsertCoinState, HasCustomerCoinsState, ThankYouState, PriceState, \
-    SoldOutState, ExactChangeOnlyState
+from vendingmachinestate import VendingMachineState, InsertCoinState, HasCustomerCoinsState, ThankYouState, \
+    PriceState, SoldOutState, ExactChangeOnlyState
 
 
 class VendingMachine:
