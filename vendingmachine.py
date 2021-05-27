@@ -85,13 +85,13 @@ class VendingMachine:
             if self.__balance >= price:
                 change_to_make = self.__balance - price
                 change = self.__make_change(change_to_make)
-                # change = self.__make_change_from_customers_coins(change_to_make) # Try to make change from the customer's coins
+                # Try to make change from the customer's coins
                 # if not change:
                 #     # Try to make change from the machine's coin vault
                 #     change = self.__make_change_from_coin_vault(change_to_make)
                 if change_to_make == 0 or change:  # customer can make the purchase
                     self.__remove_from_inventory(product)
-                    if change_to_make == 0: # Take all the customer's coins
+                    if change_to_make == 0:  # Take all the customer's coins
                         self.__move_all_of_customers_coins_to_vault()
                     # else when we made change, it got taken care of
                     self.__state = State.THANK_YOU
@@ -115,7 +115,8 @@ class VendingMachine:
         self.__coin_vault[Coin.NICKEL] += self.__customers_coins[Coin.NICKEL]
         self.__customers_coins = self.__initialize_with_no_coins()
 
-    def __initialize_with_no_coins(self):
+    @staticmethod
+    def __initialize_with_no_coins():
         return {Coin.QUARTER: 0, Coin.DIME: 0, Coin.NICKEL: 0}
 
     def __is_in_inventory(self, product: Product) -> bool:
