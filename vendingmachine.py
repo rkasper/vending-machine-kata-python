@@ -37,26 +37,31 @@ class HasCustomerCoinsState(VendingMachineState):
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
-        vm.set_state_to_insert_coin()
+        vm.set_state(State.INSERT_COIN)
         vm.set_vm_state_to_insert_coin_state()
+        #return vm.set_vm_state(InsertCoinState())
         return "THANK YOU"
 
 
 class PriceState(VendingMachineState):
     def view_display_message(self, vm):
-        vm.set_state_to_insert_coin()
-        vm.set_vm_state_to_insert_coin_state()
+        vm.set_state(State.INSERT_COIN)
+
+        #vm.set_vm_state_to_insert_coin_state()
+        vm.set_vm_state(InsertCoinState())
         return 'PRICE ' + VendingMachineState._display_amount(vm.get_display_price())
 
 
 class SoldOutState(VendingMachineState):
     def view_display_message(self, vm):
         if vm.get_balance() == 0:
-            vm.set_state_to_insert_coin()
-            vm.set_vm_state_to_insert_coin_state()
+            vm.set_state(State.INSERT_COIN)
+            #vm.set_vm_state_to_insert_coin_state()
+            vm.set_vm_state(InsertCoinState())
         else:
-            vm.set_state_to_has_customer_coins()
-            vm.set_vm_state_to_has_customer_coins_state()
+            vm.set_state(State.HAS_CUSTOMER_COINS)
+            # vm.set_vm_state_to_has_customer_coins_state()
+            vm.set_vm_state(HasCustomerCoinsState())
         return "SOLD OUT"
 
 
@@ -95,17 +100,17 @@ class VendingMachine:
         self.__coin_vault = self.__initialize_with_no_coins()
 
     # TODO Refactor these into a single "transition to state" method.
-    def set_state_to_insert_coin(self):
-        self.__state = State.INSERT_COIN
+    def set_state(self, new_state: State):
+        self.__state = new_state
 
     def set_vm_state_to_insert_coin_state(self):
         self.__vm_state = InsertCoinState()
 
-    def set_state_to_has_customer_coins(self):
-        self.__state = State.HAS_CUSTOMER_COINS
-
     def set_vm_state_to_has_customer_coins_state(self):
         self.__vm_state = HasCustomerCoinsState()
+
+    def set_vm_state(self, new_state: VendingMachineState):
+        self.__vm_state = new_state
 
     def get_balance(self):
         return self.__balance
@@ -133,34 +138,7 @@ class VendingMachine:
         return True
 
     def view_display_message(self) -> str:
-        if self.__state == State.INSERT_COIN:
-            # return "INSERT COIN"
-            return self.__vm_state.view_display_message(self)
-            # return InsertCoinState().view_display_message(self)
-        elif self.__state == State.HAS_CUSTOMER_COINS:
-            # return self.__display_amount(self.__balance)
-            return self.__vm_state.view_display_message(self)
-        elif self.__state == State.PRICE:
-            self.__state = State.INSERT_COIN
-            # self.__vm_state = InsertCoinState()
-            # return 'PRICE ' + self.__display_amount(self.__display_price)
-            return self.__vm_state.view_display_message(self)
-        elif self.__state == State.THANK_YOU:
-            # self.__state = State.INSERT_COIN
-            # return "THANK YOU"
-            return self.__vm_state.view_display_message(self)
-        elif self.__state == State.SOLD_OUT:
-            # if self.__balance == 0:
-            #     self.__state = State.INSERT_COIN
-            #     self.__vm_state = InsertCoinState()
-            # else:
-            #     self.__state = State.HAS_CUSTOMER_COINS
-            #     self.__vm_state = HasCustomerCoinsState()
-            # return "SOLD OUT"
-            return self.__vm_state.view_display_message(self)
-        else:  # state is EXACT_CHANGE_ONLY
-            # return "EXACT CHANGE ONLY"
-            return self.__vm_state.view_display_message(self)
+        return self.__vm_state.view_display_message(self)
 
     @staticmethod
     def __display_amount(amount: int) -> str:
