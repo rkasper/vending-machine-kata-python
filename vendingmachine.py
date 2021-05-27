@@ -17,7 +17,7 @@ class State(Enum):
 
 class VendingMachineState:
     @staticmethod
-    def display_amount(amount: int) -> str:
+    def display_amount(amount: int) -> str:  # TODO Try prefixing with a single _ to indicate that's it's kinda private
         return '${:,.2f}'.format(amount / 100)
 
     @abstractmethod
@@ -33,6 +33,12 @@ class InsertCoinState(VendingMachineState):
 class HasCustomerCoinsState(VendingMachineState):
     def view_display_message(self, vm):
         return VendingMachineState.display_amount(vm.get_balance())
+
+
+class ThankYouState(VendingMachineState):
+    def view_display_message(self, vm):
+        vm.set_vm_state_to_insert_coin_state()
+        return "THANK YOU"
 
 
 class VendingMachine:
@@ -64,6 +70,10 @@ class VendingMachine:
         self.__customers_coins = self.__initialize_with_no_coins()
         self.__coin_vault = self.__initialize_with_no_coins()
 
+    # TODO prefix with a single _ ?
+    def set_vm_state_to_insert_coin_state(self):
+        self.__vm_state = InsertCoinState()
+
     def get_balance(self):
         return self.__balance
 
@@ -88,7 +98,9 @@ class VendingMachine:
 
     def view_display_message(self) -> str:
         if self.__state == State.INSERT_COIN:
-            return self.__vm_state.view_display_message(self)  # "INSERT COIN"
+            #return "INSERT COIN"
+            return self.__vm_state.view_display_message(self)
+            #return InsertCoinState().view_display_message(self)
         elif self.__state == State.HAS_CUSTOMER_COINS:
             #return self.__display_amount(self.__balance)
             return self.__vm_state.view_display_message(self)
@@ -98,8 +110,9 @@ class VendingMachine:
             return 'PRICE ' + self.__display_amount(self.__display_price)
         elif self.__state == State.THANK_YOU:
             self.__state = State.INSERT_COIN
-            self.__vm_state = InsertCoinState()
-            return "THANK YOU"
+            #self.__vm_state = InsertCoinState()
+            #return "THANK YOU"
+            return self.__vm_state.view_display_message(self)
         elif self.__state == State.SOLD_OUT:
             if self.__balance == 0:
                 self.__state = State.INSERT_COIN
@@ -133,7 +146,10 @@ class VendingMachine:
                     if change_to_make == 0:  # Take all the customer's coins
                         self.__move_all_of_customers_coins_to_vault()
                     # else when we made change, it got taken care of
+
                     self.__state = State.THANK_YOU
+                    self.__vm_state = ThankYouState()
+
                     self.__balance = 0  # because I'm delivering both the product and the change
                     self.__coin_return_slot = change
                     return product
