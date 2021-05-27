@@ -37,12 +37,14 @@ class HasCustomerCoinsState(VendingMachineState):
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
+        vm.set_state_to_insert_coin()
         vm.set_vm_state_to_insert_coin_state()
         return "THANK YOU"
 
 
 class PriceState(VendingMachineState):
     def view_display_message(self, vm):
+        vm.set_state_to_insert_coin()
         vm.set_vm_state_to_insert_coin_state()
         return 'PRICE ' + VendingMachineState._display_amount(vm.get_display_price())
 
@@ -144,7 +146,7 @@ class VendingMachine:
             # return 'PRICE ' + self.__display_amount(self.__display_price)
             return self.__vm_state.view_display_message(self)
         elif self.__state == State.THANK_YOU:
-            self.__state = State.INSERT_COIN
+            # self.__state = State.INSERT_COIN
             # return "THANK YOU"
             return self.__vm_state.view_display_message(self)
         elif self.__state == State.SOLD_OUT:
