@@ -7,7 +7,7 @@ from product import Product
 
 class State(Enum):
     INSERT_COIN = 1
-    HAS_COINS = 2  # TODO Rename to HAS_CUSTOMER_COINS
+    HAS_CUSTOMER_COINS = 2
     THANK_YOU = 3
     PRICE = 4
     SOLD_OUT = 5
@@ -49,13 +49,13 @@ class VendingMachine:
         else:
             self.__balance += 25
         self.__coin_return_slot = []
-        self.__state = State.HAS_COINS
+        self.__state = State.HAS_CUSTOMER_COINS
         return True
 
     def view_display_message(self) -> str:
         if self.__state == State.INSERT_COIN:
             return "INSERT COIN"
-        elif self.__state == State.HAS_COINS:
+        elif self.__state == State.HAS_CUSTOMER_COINS:
             return self.__display_amount(self.__balance)
         elif self.__state == State.PRICE:
             self.__state = State.INSERT_COIN
@@ -67,7 +67,7 @@ class VendingMachine:
             if self.__balance == 0:
                 self.__state = State.INSERT_COIN
             else:
-                self.__state = State.HAS_COINS
+                self.__state = State.HAS_CUSTOMER_COINS
             return "SOLD OUT"
         else:  # state is EXACT_CHANGE_ONLY
             return "EXACT CHANGE ONLY"
