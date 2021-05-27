@@ -7,8 +7,8 @@ class VendingMachineState:
         return '${:,.2f}'.format(amount / 100)
 
     @abstractmethod
-    def view_display_message(self, vm):
-        pass
+    def view_display_message(self, vm) -> str:
+        return ""
 
 
 class InsertCoinState(VendingMachineState):
