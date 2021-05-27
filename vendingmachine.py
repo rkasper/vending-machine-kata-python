@@ -58,6 +58,11 @@ class SoldOutState(VendingMachineState):
         return "SOLD OUT"
 
 
+class ExactChangeOnlyState(VendingMachineState):
+    def view_display_message(self, vm):
+        return "EXACT CHANGE ONLY"
+
+
 class VendingMachine:
     __inventory: {Product: int}  # A list of Products and the number of each one that we have in inventory
 
@@ -152,7 +157,8 @@ class VendingMachine:
             # return "SOLD OUT"
             return self.__vm_state.view_display_message(self)
         else:  # state is EXACT_CHANGE_ONLY
-            return "EXACT CHANGE ONLY"
+            # return "EXACT CHANGE ONLY"
+            return self.__vm_state.view_display_message(self)
 
     @staticmethod
     def __display_amount(amount: int) -> str:
@@ -185,6 +191,7 @@ class VendingMachine:
                     return product
                 else:  # can't make change
                     self.__state = State.EXACT_CHANGE_ONLY
+                    self.__vm_state = ExactChangeOnlyState()
                     return None
             else:  # customer didn't insert enough money
                 self.__state = State.PRICE
