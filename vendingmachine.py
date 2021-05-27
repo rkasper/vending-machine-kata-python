@@ -20,18 +20,13 @@ class VendingMachine:
         if inventory is None:
             inventory = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}
         self.__inventory = inventory
-        self.__vm_state = InsertCoinState()
+        self.__vm_state = InsertCoinState.instance()
         self.__display_price = 0
         self.__balance = 0
         self.__coin_return_slot = []
         self.__price_list = {Product.COLA: 100, Product.CHIPS: 50, Product.CANDY: 65}
         self.__customers_coins = self.__initialize_with_no_coins()
         self.__coin_vault = self.__initialize_with_no_coins()
-
-    # TODO Refactor these into a single "transition to state" method. I have a feeling we won't need this
-    # after we state-specific version of set_vm_state() after we refactor the State objects to the Singleton pattern.
-    def set_vm_state_to_insert_coin_state(self):
-        self.__vm_state = InsertCoinState()
 
     def set_vm_state(self, new_state: VendingMachineState):
         self.__vm_state = new_state
@@ -193,7 +188,7 @@ class VendingMachine:
 
     def press_coin_return_button(self):
         self.__balance = 0
-        VendingMachineState.transition_to(self, InsertCoinState())
+        VendingMachineState.transition_to(self, InsertCoinState.instance())
         self.__coin_return_slot = []
         for i in range(0, self.__customers_coins[Coin.QUARTER]):
             self.__coin_return_slot.append(Coin.QUARTER)
