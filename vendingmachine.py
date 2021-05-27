@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from enum import Enum
 from typing import Optional
 
@@ -14,9 +15,24 @@ class State(Enum):
     EXACT_CHANGE_ONLY = 6
 
 
+class VendingMachineState:
+    @abstractmethod
+    def view_display_message(self):
+        pass
+
+
+class InsertCoinState(VendingMachineState):
+    def view_display_message(self):
+        return "INSERT COIN"
+
+
 class VendingMachine:
     __inventory: {Product: int}  # A list of Products and the number of each one that we have in inventory
+
+    # TODO Refactor from state logic to the State design pattern. Use VendingMachineState instead of State.
     __state: State               # I am a state machine! This is what state I am in.
+    __vm_state: VendingMachineState  # I am a state machine following the State design pattern!
+
     __display_price: int         # When we're in state State.PRICE, this is the price to display.
     __coin_return_slot: [Coin]   # The coins that the machine has ejected into the coin return slot
     __balance: int               # How much money the customers have inserted, in cents
@@ -28,7 +44,10 @@ class VendingMachine:
         if inventory is None:
             inventory = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}
         self.__inventory = inventory
+
         self.__state = State.INSERT_COIN
+        self.__vm_state = InsertCoinState()
+
         self.__display_price = 0
         self.__balance = 0
         self.__coin_return_slot = []
@@ -54,18 +73,21 @@ class VendingMachine:
 
     def view_display_message(self) -> str:
         if self.__state == State.INSERT_COIN:
-            return "INSERT COIN"
+            return self.__vm_state.view_display_message()  # "INSERT COIN"
         elif self.__state == State.HAS_CUSTOMER_COINS:
             return self.__display_amount(self.__balance)
         elif self.__state == State.PRICE:
             self.__state = State.INSERT_COIN
+            self.__vm_state = InsertCoinState()
             return 'PRICE ' + self.__display_amount(self.__display_price)
         elif self.__state == State.THANK_YOU:
             self.__state = State.INSERT_COIN
+            self.__vm_state = InsertCoinState()
             return "THANK YOU"
         elif self.__state == State.SOLD_OUT:
             if self.__balance == 0:
                 self.__state = State.INSERT_COIN
+                self.__vm_state = InsertCoinState()
             else:
                 self.__state = State.HAS_CUSTOMER_COINS
             return "SOLD OUT"
@@ -206,7 +228,9 @@ class VendingMachine:
 
     def press_coin_return_button(self):
         self.__balance = 0
+
         self.__state = State.INSERT_COIN
+        self.__vm_state = InsertCoinState()
 
         self.__coin_return_slot = []
         for i in range(0, self.__customers_coins[Coin.QUARTER]):
