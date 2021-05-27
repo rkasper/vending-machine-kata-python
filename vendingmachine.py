@@ -6,15 +6,6 @@ from coin import Coin
 from product import Product
 
 
-class State(Enum):
-    INSERT_COIN = 1
-    HAS_CUSTOMER_COINS = 2
-    THANK_YOU = 3
-    PRICE = 4
-    SOLD_OUT = 5
-    EXACT_CHANGE_ONLY = 6
-
-
 class VendingMachineState:
     @staticmethod
     def _display_amount(amount: int) -> str:
@@ -37,7 +28,7 @@ class HasCustomerCoinsState(VendingMachineState):
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
-        vm.set_state(State.INSERT_COIN)
+        #vm.set_state(State.INSERT_COIN)
         vm.set_vm_state_to_insert_coin_state()
         #return vm.set_vm_state(InsertCoinState())
         return "THANK YOU"
@@ -45,8 +36,6 @@ class ThankYouState(VendingMachineState):
 
 class PriceState(VendingMachineState):
     def view_display_message(self, vm):
-        vm.set_state(State.INSERT_COIN)
-
         #vm.set_vm_state_to_insert_coin_state()
         vm.set_vm_state(InsertCoinState())
         return 'PRICE ' + VendingMachineState._display_amount(vm.get_display_price())
@@ -55,12 +44,8 @@ class PriceState(VendingMachineState):
 class SoldOutState(VendingMachineState):
     def view_display_message(self, vm):
         if vm.get_balance() == 0:
-            vm.set_state(State.INSERT_COIN)
-            #vm.set_vm_state_to_insert_coin_state()
             vm.set_vm_state(InsertCoinState())
         else:
-            vm.set_state(State.HAS_CUSTOMER_COINS)
-            # vm.set_vm_state_to_has_customer_coins_state()
             vm.set_vm_state(HasCustomerCoinsState())
         return "SOLD OUT"
 
@@ -73,8 +58,6 @@ class ExactChangeOnlyState(VendingMachineState):
 class VendingMachine:
     __inventory: {Product: int}  # A list of Products and the number of each one that we have in inventory
 
-    # TODO Refactor from state logic to the State design pattern. Use VendingMachineState instead of State.
-    __state: State               # I am a state machine! This is what state I am in.
     __vm_state: VendingMachineState  # I am a state machine following the State design pattern!
 
     __display_price: int         # When we're in state State.PRICE, this is the price to display.
@@ -88,10 +71,7 @@ class VendingMachine:
         if inventory is None:
             inventory = {Product.CANDY: 42, Product.COLA: 42, Product.CHIPS: 42}
         self.__inventory = inventory
-
-        self.__state = State.INSERT_COIN
         self.__vm_state = InsertCoinState()
-
         self.__display_price = 0
         self.__balance = 0
         self.__coin_return_slot = []
@@ -100,9 +80,6 @@ class VendingMachine:
         self.__coin_vault = self.__initialize_with_no_coins()
 
     # TODO Refactor these into a single "transition to state" method.
-    def set_state(self, new_state: State):
-        self.__state = new_state
-
     def set_vm_state_to_insert_coin_state(self):
         self.__vm_state = InsertCoinState()
 
@@ -132,7 +109,6 @@ class VendingMachine:
             self.__balance += 25
         self.__coin_return_slot = []
 
-        self.__state = State.HAS_CUSTOMER_COINS
         self.__vm_state = HasCustomerCoinsState()
 
         return True
@@ -163,24 +139,20 @@ class VendingMachine:
                         self.__move_all_of_customers_coins_to_vault()
                     # else when we made change, it got taken care of
 
-                    self.__state = State.THANK_YOU
                     self.__vm_state = ThankYouState()
 
                     self.__balance = 0  # because I'm delivering both the product and the change
                     self.__coin_return_slot = change
                     return product
                 else:  # can't make change
-                    self.__state = State.EXACT_CHANGE_ONLY
                     self.__vm_state = ExactChangeOnlyState()
                     return None
             else:  # customer didn't insert enough money
-                self.__state = State.PRICE
                 self.__vm_state = PriceState()
 
                 self.__display_price = price
                 return None
         else:  # selected product is not in inventory
-            self.__state = State.SOLD_OUT
             self.__vm_state = SoldOutState()
             return None
 
@@ -281,10 +253,7 @@ class VendingMachine:
 
     def press_coin_return_button(self):
         self.__balance = 0
-
-        self.__state = State.INSERT_COIN
         self.__vm_state = InsertCoinState()
-
         self.__coin_return_slot = []
         for i in range(0, self.__customers_coins[Coin.QUARTER]):
             self.__coin_return_slot.append(Coin.QUARTER)
