@@ -78,3 +78,10 @@ _So that I can determine if I can buy something with the money I have before ins
 
 When the machine is not able to make change with the money in the machine for any of the items that it sells, it will
 display EXACT CHANGE ONLY instead of INSERT COIN.
+
+Giving Credit Where It's Due
+============================
+
+This repository is a copy of Guy Rose's [vending machine kata](https://github.com/guyroyse/vending-machine-kata). Thanks, Guy!
+
+I learned this kata from [Bob Allen](https://www.linkedin.com/in/boballenagilist/). Thanks, Bob!

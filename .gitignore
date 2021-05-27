@@ -1,3 +1,11 @@
 *~
 *.swp
 .DS_Store
+bin
+obj
+*.sln.DotSettings.user
+.vs
+vendor
+.idea
+*.iml
+venv
