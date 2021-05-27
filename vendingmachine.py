@@ -88,7 +88,7 @@ class VendingMachine:
                 self.__display_price = price
                 return None
         else:  # selected product is not in inventory
-            VendingMachineState.transition_to(self, SoldOutState())
+            VendingMachineState.transition_to(self, SoldOutState.instance())
             return None
 
     def __move_all_of_customers_coins_to_vault(self):

@@ -98,6 +98,19 @@ class PriceState(VendingMachineState):
 
 
 class SoldOutState(VendingMachineState):
+    @staticmethod
+    def instance():
+        if SoldOutState._instance == None:
+            SoldOutState()
+        return SoldOutState._instance
+
+    def __init__(self):
+        """ Virtually private constructor. """
+        if SoldOutState._instance != None:
+            raise Exception("This class is a singleton!")
+        else:
+            SoldOutState._instance = self
+
     def view_display_message(self, vm):
         if vm.get_balance() == 0:
             self.transition_to(vm, InsertCoinState.instance())
