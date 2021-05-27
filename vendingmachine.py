@@ -56,7 +56,7 @@ class VendingMachine:
             self.__balance += 25
         self.__coin_return_slot = []
 
-        self.__vm_state = HasCustomerCoinsState()
+        VendingMachineState.transition_to(self, HasCustomerCoinsState())
 
         return True
 
@@ -81,19 +81,19 @@ class VendingMachine:
                     if change_to_make == 0:  # Take all the customer's coins
                         self.__move_all_of_customers_coins_to_vault()
                     # else when we made change, it got taken care of
-                    self.__vm_state = ThankYouState()
+                    VendingMachineState.transition_to(self, ThankYouState())
                     self.__balance = 0  # because I'm delivering both the product and the change
                     self.__coin_return_slot = change
                     return product
                 else:  # can't make change
-                    self.__vm_state = ExactChangeOnlyState()
+                    VendingMachineState.transition_to(self, ExactChangeOnlyState())
                     return None
             else:  # customer didn't insert enough money
-                self.__vm_state = PriceState()
+                VendingMachineState.transition_to(self, PriceState())
                 self.__display_price = price
                 return None
         else:  # selected product is not in inventory
-            self.__vm_state = SoldOutState()
+            VendingMachineState.transition_to(self, SoldOutState())
             return None
 
     def __move_all_of_customers_coins_to_vault(self):
@@ -193,7 +193,7 @@ class VendingMachine:
 
     def press_coin_return_button(self):
         self.__balance = 0
-        self.__vm_state = InsertCoinState()
+        VendingMachineState.transition_to(self, InsertCoinState())
         self.__coin_return_slot = []
         for i in range(0, self.__customers_coins[Coin.QUARTER]):
             self.__coin_return_slot.append(Coin.QUARTER)

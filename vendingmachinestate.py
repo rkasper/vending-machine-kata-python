@@ -10,6 +10,10 @@ class VendingMachineState:
     def view_display_message(self, vm) -> str:
         return ""
 
+    @staticmethod
+    def transition_to(vm, next_vm_state):
+        vm.set_vm_state(next_vm_state)
+
 
 class InsertCoinState(VendingMachineState):
     def view_display_message(self, vm):
@@ -23,22 +27,24 @@ class HasCustomerCoinsState(VendingMachineState):
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
+        # TODO The following line shouldn't exist. Try removing it after we refactor toward the Singleton pattern.
         vm.set_vm_state_to_insert_coin_state()
+        self.transition_to(vm, InsertCoinState())
         return "THANK YOU"
 
 
 class PriceState(VendingMachineState):
     def view_display_message(self, vm):
-        vm.set_vm_state(InsertCoinState())
+        self.transition_to(vm, InsertCoinState())
         return 'PRICE ' + VendingMachineState._display_amount(vm.get_display_price())
 
 
 class SoldOutState(VendingMachineState):
     def view_display_message(self, vm):
         if vm.get_balance() == 0:
-            vm.set_vm_state(InsertCoinState())
+            self.transition_to(vm, InsertCoinState())
         else:
-            vm.set_vm_state(HasCustomerCoinsState())
+            self.transition_to(vm, HasCustomerCoinsState())
         return "SOLD OUT"
 
 
