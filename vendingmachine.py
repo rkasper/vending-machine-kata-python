@@ -78,9 +78,6 @@ class VendingMachine:
     def set_vm_state_to_insert_coin_state(self):
         self.__vm_state = InsertCoinState()
 
-    def set_vm_state_to_has_customer_coins_state(self):
-        self.__vm_state = HasCustomerCoinsState()
-
     def set_vm_state(self, new_state: VendingMachineState):
         self.__vm_state = new_state
 
