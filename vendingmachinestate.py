@@ -30,6 +30,7 @@ class InsertCoinState(VendingMachineState):
             InsertCoinState()
         return InsertCoinState._instance
 
+    # TODO Could this __init__ code be factored out to the base class?
     def __init__(self):
         """ Virtually private constructor. """
         if InsertCoinState._instance is not None:
