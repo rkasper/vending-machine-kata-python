@@ -63,10 +63,6 @@ class VendingMachine:
     def view_display_message(self) -> str:
         return self.__vm_state.view_display_message(self)
 
-    @staticmethod
-    def __display_amount(amount: int) -> str:
-        return '${:,.2f}'.format(amount / 100)
-
     def check_coin_return_slot(self) -> [Coin]:
         return self.__coin_return_slot
 
