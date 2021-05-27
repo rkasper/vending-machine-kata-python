@@ -28,15 +28,12 @@ class HasCustomerCoinsState(VendingMachineState):
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
-        #vm.set_state(State.INSERT_COIN)
         vm.set_vm_state_to_insert_coin_state()
-        #return vm.set_vm_state(InsertCoinState())
         return "THANK YOU"
 
 
 class PriceState(VendingMachineState):
     def view_display_message(self, vm):
-        #vm.set_vm_state_to_insert_coin_state()
         vm.set_vm_state(InsertCoinState())
         return 'PRICE ' + VendingMachineState._display_amount(vm.get_display_price())
 
@@ -57,9 +54,7 @@ class ExactChangeOnlyState(VendingMachineState):
 
 class VendingMachine:
     __inventory: {Product: int}  # A list of Products and the number of each one that we have in inventory
-
     __vm_state: VendingMachineState  # I am a state machine following the State design pattern!
-
     __display_price: int         # When we're in state State.PRICE, this is the price to display.
     __coin_return_slot: [Coin]   # The coins that the machine has ejected into the coin return slot
     __balance: int               # How much money the customers have inserted, in cents
