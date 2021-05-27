@@ -16,14 +16,23 @@ class State(Enum):
 
 
 class VendingMachineState:
+    @staticmethod
+    def display_amount(amount: int) -> str:
+        return '${:,.2f}'.format(amount / 100)
+
     @abstractmethod
-    def view_display_message(self):
+    def view_display_message(self, vm):
         pass
 
 
 class InsertCoinState(VendingMachineState):
-    def view_display_message(self):
+    def view_display_message(self, vm):
         return "INSERT COIN"
+
+
+class HasCustomerCoinsState(VendingMachineState):
+    def view_display_message(self, vm):
+        return VendingMachineState.display_amount(vm.get_balance())
 
 
 class VendingMachine:
@@ -55,6 +64,9 @@ class VendingMachine:
         self.__customers_coins = self.__initialize_with_no_coins()
         self.__coin_vault = self.__initialize_with_no_coins()
 
+    def get_balance(self):
+        return self.__balance
+
     def deposit_coin(self, coin: Coin) -> bool:
         if coin == Coin.PENNY:
             self.__coin_return_slot = [coin]
@@ -68,14 +80,18 @@ class VendingMachine:
         else:
             self.__balance += 25
         self.__coin_return_slot = []
+
         self.__state = State.HAS_CUSTOMER_COINS
+        self.__vm_state = HasCustomerCoinsState()
+
         return True
 
     def view_display_message(self) -> str:
         if self.__state == State.INSERT_COIN:
-            return self.__vm_state.view_display_message()  # "INSERT COIN"
+            return self.__vm_state.view_display_message(self)  # "INSERT COIN"
         elif self.__state == State.HAS_CUSTOMER_COINS:
-            return self.__display_amount(self.__balance)
+            #return self.__display_amount(self.__balance)
+            return self.__vm_state.view_display_message(self)
         elif self.__state == State.PRICE:
             self.__state = State.INSERT_COIN
             self.__vm_state = InsertCoinState()
@@ -90,6 +106,7 @@ class VendingMachine:
                 self.__vm_state = InsertCoinState()
             else:
                 self.__state = State.HAS_CUSTOMER_COINS
+                self.__vm_state = HasCustomerCoinsState()
             return "SOLD OUT"
         else:  # state is EXACT_CHANGE_ONLY
             return "EXACT CHANGE ONLY"
