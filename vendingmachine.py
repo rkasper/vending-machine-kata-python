@@ -17,7 +17,7 @@ class State(Enum):
 
 class VendingMachineState:
     @staticmethod
-    def display_amount(amount: int) -> str:  # TODO Try prefixing with a single _ to indicate that's it's kinda private
+    def _display_amount(amount: int) -> str:
         return '${:,.2f}'.format(amount / 100)
 
     @abstractmethod
@@ -32,12 +32,12 @@ class InsertCoinState(VendingMachineState):
 
 class HasCustomerCoinsState(VendingMachineState):
     def view_display_message(self, vm):
-        return VendingMachineState.display_amount(vm.get_balance())
+        return VendingMachineState._display_amount(vm.get_balance())
 
 
 class ThankYouState(VendingMachineState):
     def view_display_message(self, vm):
-        vm.set_vm_state_to_insert_coin_state()
+        vm._set_vm_state_to_insert_coin_state()
         return "THANK YOU"
 
 
@@ -70,8 +70,7 @@ class VendingMachine:
         self.__customers_coins = self.__initialize_with_no_coins()
         self.__coin_vault = self.__initialize_with_no_coins()
 
-    # TODO prefix with a single _ ?
-    def set_vm_state_to_insert_coin_state(self):
+    def _set_vm_state_to_insert_coin_state(self):
         self.__vm_state = InsertCoinState()
 
     def get_balance(self):
