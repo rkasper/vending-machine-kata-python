@@ -26,13 +26,13 @@ class VendingMachineState:
 class InsertCoinState(VendingMachineState):
     @staticmethod
     def instance():
-        if InsertCoinState._instance == None:
+        if InsertCoinState._instance is None:
             InsertCoinState()
         return InsertCoinState._instance
 
     def __init__(self):
         """ Virtually private constructor. """
-        if InsertCoinState._instance != None:
+        if InsertCoinState._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             InsertCoinState._instance = self
@@ -44,13 +44,13 @@ class InsertCoinState(VendingMachineState):
 class HasCustomerCoinsState(VendingMachineState):
     @staticmethod
     def instance():
-        if HasCustomerCoinsState._instance == None:
+        if HasCustomerCoinsState._instance is None:
             HasCustomerCoinsState()
         return HasCustomerCoinsState._instance
 
     def __init__(self):
         """ Virtually private constructor. """
-        if HasCustomerCoinsState._instance != None:
+        if HasCustomerCoinsState._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             HasCustomerCoinsState._instance = self
@@ -62,13 +62,13 @@ class HasCustomerCoinsState(VendingMachineState):
 class ThankYouState(VendingMachineState):
     @staticmethod
     def instance():
-        if ThankYouState._instance == None:
+        if ThankYouState._instance is None:
             ThankYouState()
         return ThankYouState._instance
 
     def __init__(self):
         """ Virtually private constructor. """
-        if ThankYouState._instance != None:
+        if ThankYouState._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             ThankYouState._instance = self
@@ -81,13 +81,13 @@ class ThankYouState(VendingMachineState):
 class PriceState(VendingMachineState):
     @staticmethod
     def instance():
-        if PriceState._instance == None:
+        if PriceState._instance is None:
             PriceState()
         return PriceState._instance
 
     def __init__(self):
         """ Virtually private constructor. """
-        if PriceState._instance != None:
+        if PriceState._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             PriceState._instance = self
@@ -100,13 +100,13 @@ class PriceState(VendingMachineState):
 class SoldOutState(VendingMachineState):
     @staticmethod
     def instance():
-        if SoldOutState._instance == None:
+        if SoldOutState._instance is None:
             SoldOutState()
         return SoldOutState._instance
 
     def __init__(self):
         """ Virtually private constructor. """
-        if SoldOutState._instance != None:
+        if SoldOutState._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             SoldOutState._instance = self
@@ -122,13 +122,13 @@ class SoldOutState(VendingMachineState):
 class ExactChangeOnlyState(VendingMachineState):
     @staticmethod
     def instance():
-        if ExactChangeOnlyState._instance == None:
+        if ExactChangeOnlyState._instance is None:
             ExactChangeOnlyState()
         return ExactChangeOnlyState._instance
 
     def __init__(self):
         """ Virtually private constructor. """
-        if ExactChangeOnlyState._instance != None:
+        if ExactChangeOnlyState._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             ExactChangeOnlyState._instance = self
