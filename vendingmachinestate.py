@@ -79,6 +79,19 @@ class ThankYouState(VendingMachineState):
 
 
 class PriceState(VendingMachineState):
+    @staticmethod
+    def instance():
+        if PriceState._instance == None:
+            PriceState()
+        return PriceState._instance
+
+    def __init__(self):
+        """ Virtually private constructor. """
+        if PriceState._instance != None:
+            raise Exception("This class is a singleton!")
+        else:
+            PriceState._instance = self
+
     def view_display_message(self, vm):
         self.transition_to(vm, InsertCoinState.instance())
         return 'PRICE ' + VendingMachineState._display_amount(vm.get_display_price())

@@ -84,7 +84,7 @@ class VendingMachine:
                     VendingMachineState.transition_to(self, ExactChangeOnlyState())
                     return None
             else:  # customer didn't insert enough money
-                VendingMachineState.transition_to(self, PriceState())
+                VendingMachineState.transition_to(self, PriceState.instance())
                 self.__display_price = price
                 return None
         else:  # selected product is not in inventory
