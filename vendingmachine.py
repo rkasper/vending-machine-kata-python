@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from enum import Enum
 from typing import Optional
 
 from coin import Coin
@@ -74,7 +73,8 @@ class VendingMachine:
         self.__customers_coins = self.__initialize_with_no_coins()
         self.__coin_vault = self.__initialize_with_no_coins()
 
-    # TODO Refactor these into a single "transition to state" method.
+    # TODO Refactor these into a single "transition to state" method. I have a feeling we won't need this
+    # after we state-specific version of set_vm_state() after we refactor the State objects to the Singleton pattern.
     def set_vm_state_to_insert_coin_state(self):
         self.__vm_state = InsertCoinState()
 
